@@ -87,7 +87,7 @@ Users still need to:
 
 This creates a continuous ecosystem rather than a simple transaction between a buyer and a seller.
 
-Mission
+**Mission**
 
 Gicomm aims to:
 
@@ -132,7 +132,7 @@ A marketplace can contain thousands or millions of products, but simply having m
 
 Gicomm therefore treats discovery as a fundamental part of the product, rather than simply adding a search bar.
 
-The Solution
+**The Solution**
 
 Gicomm aims to create a connected ecosystem containing several major components.
 
@@ -153,7 +153,7 @@ Gicomm aims to create a connected ecosystem containing several major components.
 
 The ecosystem is designed so that each component strengthens the others.
 
-Core Ecosystem
+**Core Ecosystem**
 
 The long-term Gicomm ecosystem consists of several major systems.
 
@@ -181,7 +181,7 @@ A future communication layer connecting users and creators.
 
 A personal environment where users can manage their purchased and saved digital products.
 
-Gicomm Marketplace
+**Gicomm Marketplace**
 
 The marketplace is the commercial foundation of Gicomm.
 
@@ -256,7 +256,7 @@ Photography resources
 
 The final category structure will depend on future market research and user behavior.
 
-Gicomm AI
+**Gicomm AI**
 
 Gicomm AI is a long-term component of the Gicomm ecosystem.
 
