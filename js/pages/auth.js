@@ -21,8 +21,8 @@ document.querySelector("#forgot").addEventListener(
         event.preventDefault();
 
         window.alert(
-            "Demo: reset password akan tersedia " +
-            "setelah Supabase Auth terhubung."
+            "Demo: password reset will be available after " +
+            "Supabase Auth is connected."
         );
     }
 );

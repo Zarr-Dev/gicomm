@@ -10,27 +10,27 @@ import {
 const tabs = {
     Overview: [
         "Recent activity",
-        "Aktivitas terbaru akun demo.",
+        "Latest updates from your demo workspace.",
     ],
     "My Library": [
         "My Library",
-        "18 produk tersimpan di library demo.",
+        "18 items saved in your demo library.",
     ],
     Saved: [
         "Saved",
-        "6 produk yang kamu simpan.",
+        "6 products you have saved.",
     ],
     Orders: [
         "Orders",
-        "12 order demo telah selesai.",
+        "12 demo orders completed.",
     ],
     Selling: [
         "Selling",
-        "3 produk demo sedang dijual.",
+        "3 demo products are currently live.",
     ],
     Settings: [
         "Settings",
-        "Preferensi akun demo.",
+        "Manage your demo account preferences.",
     ],
 };
 
@@ -69,6 +69,18 @@ document.querySelector("#theme").addEventListener(
         applyTheme(nextTheme);
     }
 );
+
+document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+        const nextTheme =
+            document.body.classList.contains("dark")
+                ? "light"
+                : "dark";
+
+        setTheme(nextTheme);
+        applyTheme(nextTheme);
+    });
+});
 
 document.querySelector("#logout").addEventListener(
     "click",

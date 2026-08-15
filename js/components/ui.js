@@ -13,7 +13,17 @@ export function showToast(element, message, duration = 2200) {
 }
 
 export function setTheme(theme) {
-    document.body.classList.toggle("dark", theme === "dark");
+    const isDark = theme === "dark";
+    document.body.classList.toggle("dark", isDark);
+
+    document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+        const icon = isDark ? "☀" : "☾";
+        button.textContent = icon;
+        button.setAttribute(
+            "aria-label",
+            isDark ? "Switch to light mode" : "Switch to dark mode"
+        );
+    });
 }
 
 export function toggleTheme() {

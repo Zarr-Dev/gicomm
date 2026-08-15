@@ -113,7 +113,7 @@ function renderProducts() {
     const products = getVisibleProducts();
 
     elements.resultText.textContent =
-        `${products.length} produk tersedia`;
+        `${products.length} products available`;
 
     elements.emptyState.hidden = products.length > 0;
 
@@ -258,7 +258,7 @@ function addToCart(productId) {
 
     showToast(
         elements.toast,
-        `${product.name} ditambahkan ke bag.`
+        `${product.name} added to your bag.`
     );
 }
 
@@ -267,13 +267,13 @@ function toggleSaved(productId) {
         saved.delete(productId);
         showToast(
             elements.toast,
-            "Produk dihapus dari wishlist."
+            "Removed from wishlist."
         );
     } else {
         saved.add(productId);
         showToast(
             elements.toast,
-            "Produk disimpan ke wishlist."
+            "Saved to wishlist."
         );
     }
 
@@ -430,6 +430,18 @@ document.querySelector("#focusSearch").onclick = () => {
     elements.searchInput.focus();
 };
 
+document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+        const nextTheme =
+            document.body.classList.contains("dark")
+                ? "light"
+                : "dark";
+
+        setTheme(nextTheme);
+        applyTheme(nextTheme);
+    });
+});
+
 elements.filterToggle.onclick = () => {
     elements.filters.classList.toggle("open");
 };
@@ -570,8 +582,8 @@ document.querySelector("#checkout").onclick = () => {
     showToast(
         elements.toast,
         cart.length > 0
-            ? "Checkout demo siap dihubungkan ke backend."
-            : "Bag masih kosong."
+            ? "Checkout demo is ready for backend integration."
+            : "Your bag is empty."
     );
 };
 

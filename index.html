@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
  <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width,initial-scale=1" name="viewport"/>
@@ -31,14 +31,17 @@
     </a>
    </nav>
    <div class="actions">
-    <button class="round" id="focusSearch">
-     &telrec;
+    <button class="round" id="focusSearch" aria-label="Focus search">
+     ⌕
     </button>
     <button type="button" class="round cart" id="openCart" aria-label="Open cart">
-     &square;
+     ⊞
      <b id="cartCount">
       0
      </b>
+    </button>
+    <button class="round theme-toggle" data-theme-toggle="true" aria-label="Switch to dark mode" type="button">
+     ☾
     </button>
     <a class="signin" href="login.html">
      Sign in
@@ -55,20 +58,20 @@
       GICOMM MARKETPLACE
      </p>
      <h1>
-      Temukan produk digital yang
+      Discover digital tools
       <br/>
       <em>
-       tepat untuk pekerjaanmu.
+       built for sharper work.
       </em>
      </h1>
      <p class="lead">
-      Template, software, assets, tools, dan resources dari creators dalam satu marketplace yang sederhana.
+      Templates, software, assets, workflows, and creator-built resources in one focused marketplace.
      </p>
      <div class="searchbox">
       <span>
-       &telrec;
+       ⌕
       </span>
-      <input id="search" placeholder="Cari produk, kategori, atau kebutuhan..."/>
+      <input id="search" placeholder="Search products, categories, or use cases..."/>
       <button id="searchBtn">
        Search
       </button>
@@ -97,10 +100,10 @@
        GICOMM NOTE
       </small>
       <strong>
-       Good products deserve to be found.
+       Great products deserve better discovery.
       </strong>
       <span>
-       Discovery-first marketplace.
+       Built for modern creators and teams.
       </span>
      </div>
     </div>
@@ -112,10 +115,10 @@
        DISCOVER
       </p>
       <h2>
-       Produk untuk mulai.
+       Built for your next move.
       </h2>
       <p class="muted" id="resultText">
-       8 produk tersedia
+       8 products available
       </p>
      </div>
      <div class="toolbar">
@@ -210,10 +213,10 @@
     </div>
     <div class="empty" hidden="" id="empty">
      <h3>
-      Tidak ada yang cocok.
+      Nothing matches yet.
      </h3>
      <p>
-      Coba longgarkan filter atau gunakan pencarian lain.
+      Try a broader search or loosen the filters.
      </p>
      <button class="secondary" id="reset">
       Reset filters
@@ -227,7 +230,7 @@
        CATEGORIES
       </p>
       <h2>
-       Jelajahi berdasarkan kebutuhan.
+       Explore by workflow.
       </h2>
      </div>
     </div>
@@ -285,10 +288,10 @@
        FOR CREATORS
       </p>
       <h2>
-       Sudah membuat sesuatu yang berguna?
+       Have something useful to share?
       </h2>
       <p class="muted">
-       Publish produk, kelola listing, dan bangun reputasi creator kamu.
+       Publish products, manage listings, and grow your creator reputation.
       </p>
      </div>
      <a class="primary" href="login.html?mode=creator">
