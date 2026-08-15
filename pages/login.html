@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Gicomm &mdash; Sign in
+  </title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Montserrat:wght@700;800&amp;display=swap" rel="stylesheet"/>
+  <link href="../css/style.css" rel="stylesheet"/>
+ </head>
+ <body class="auth">
+  <div class="auth-shell">
+   <a class="brand" href="index.html">
+    <span class="brand-mark">
+     G
+    </span>
+    Gicomm
+   </a>
+   <div class="auth-card">
+    <p class="eyebrow">
+     WELCOME BACK
+    </p>
+    <h1>
+     Sign in to Gicomm.
+    </h1>
+    <p class="muted">
+     Masuk untuk mengakses library, saved products, dan dashboard.
+    </p>
+    <form id="loginForm">
+     <label>
+      Email
+      <input id="email" placeholder="you@example.com" required="" type="email"/>
+     </label>
+     <label>
+      Password
+      <input placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required="" type="password"/>
+     </label>
+     <div class="auth-row">
+      <span>
+       Remember me
+      </span>
+      <a href="#" id="forgot">
+       Forgot password?
+      </a>
+     </div>
+     <button class="primary wide">
+      Continue
+     </button>
+    </form>
+    <div class="or">
+     or
+    </div>
+    <div class="social">
+     <button class="secondary">
+      Continue with Google
+     </button>
+     <button class="secondary">
+      Continue with GitHub
+     </button>
+    </div>
+    <p class="auth-bottom">
+     Belum punya akun?
+     <a href="#" id="signup">
+      Create demo account
+     </a>
+    </p>
+   </div>
+   <p class="auth-note">
+    Demo frontend &mdash; tidak ada kredensial yang dikirim.
+   </p>
+  </div>
+  <script src="../js/pages/auth.js" type="module">
+  </script>
+ </body>
+</html>

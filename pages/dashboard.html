@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Gicomm &mdash; Dashboard
+  </title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Montserrat:wght@700;800&amp;display=swap" rel="stylesheet"/>
+  <link href="../css/style.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <header class="dash-header">
+   <a class="brand" href="index.html">
+    <span class="brand-mark">
+     G
+    </span>
+    Gicomm
+   </a>
+   <div class="actions">
+    <a href="index.html">
+     Marketplace
+    </a>
+    <button class="round" id="theme">
+     ◐
+    </button>
+    <span class="avatar">
+     ZA
+    </span>
+   </div>
+  </header>
+  <main class="dash-page">
+   <div class="dash-title">
+    <div>
+     <p class="eyebrow">
+      DEMO ACCOUNT
+     </p>
+     <h1>
+      Welcome back, Zhar.
+     </h1>
+     <p class="muted">
+      Kelola library, wishlist, order, penjualan, dan profil.
+     </p>
+    </div>
+    <a class="primary" href="index.html#discover">
+     Explore products
+    </a>
+   </div>
+   <div class="dash-layout">
+    <aside class="dash-nav">
+     <button class="active" data-tab="Overview">
+      ⌂ Overview
+     </button>
+     <button data-tab="My Library">
+      &square; My Library
+     </button>
+     <button data-tab="Saved">
+      ♡ Saved
+     </button>
+     <button data-tab="Orders">
+      &rdsh; Orders
+     </button>
+     <button data-tab="Selling">
+      &nearrow; Selling
+     </button>
+     <button data-tab="Settings">
+      ⚙ Settings
+     </button>
+     <button id="logout">
+      &rarrhk; Sign out
+     </button>
+    </aside>
+    <section class="dash-content">
+     <div class="stats">
+      <div>
+       <small>
+        Library
+       </small>
+       <strong>
+        18
+       </strong>
+       <span>
+        products
+       </span>
+      </div>
+      <div>
+       <small>
+        Saved
+       </small>
+       <strong>
+        06
+       </strong>
+       <span>
+        items
+       </span>
+      </div>
+      <div>
+       <small>
+        Orders
+       </small>
+       <strong>
+        12
+       </strong>
+       <span>
+        completed
+       </span>
+      </div>
+      <div>
+       <small>
+        Sales
+       </small>
+       <strong>
+        $128
+       </strong>
+       <span>
+        this month
+       </span>
+      </div>
+     </div>
+     <div class="dash-cols">
+      <section class="panel">
+       <div class="panel-head">
+        <div>
+         <h3 id="tabTitle">
+          Recent activity
+         </h3>
+         <p class="muted" id="tabSub">
+          Aktivitas terbaru akun demo.
+         </p>
+        </div>
+        <button class="secondary">
+         Export
+        </button>
+       </div>
+       <div class="activities">
+        <div>
+         <i>
+         </i>
+         <b>
+          Purchased
+         </b>
+         <span>
+          Minimal UI Kit
+         </span>
+         <time>
+          2h ago
+         </time>
+        </div>
+        <div>
+         <i>
+         </i>
+         <b>
+          Saved
+         </b>
+         <span>
+          Creator Workspace
+         </span>
+         <time>
+          Yesterday
+         </time>
+        </div>
+        <div>
+         <i>
+         </i>
+         <b>
+          Published
+         </b>
+         <span>
+          Personal Finance Template
+         </span>
+         <time>
+          3d ago
+         </time>
+        </div>
+       </div>
+      </section>
+      <aside class="panel">
+       <p class="eyebrow">
+        PROFILE
+       </p>
+       <div class="profile">
+        <div class="big-avatar">
+         ZA
+        </div>
+        <div>
+         <b>
+          Khairul Azhar
+         </b>
+         <small>
+          @zarr.dev
+         </small>
+        </div>
+       </div>
+       <div class="progress">
+        <div>
+         <span>
+          Profile completion
+         </span>
+         <b>
+          94%
+         </b>
+        </div>
+        <div class="line">
+         <i>
+         </i>
+        </div>
+       </div>
+       <button class="secondary wide">
+        Edit profile
+       </button>
+      </aside>
+     </div>
+     <section class="panel">
+      <div class="panel-head">
+       <div>
+        <p class="eyebrow">
+         RECOMMENDED
+        </p>
+        <h3>
+         Picked for you
+        </h3>
+       </div>
+       <a href="index.html#discover">
+        View marketplace &rarr;
+       </a>
+      </div>
+      <div class="mini-grid">
+       <article>
+        <span>
+         UI
+        </span>
+        <b>
+         Minimal UI Kit
+        </b>
+        <small>
+         &starf; 4.9 &middot; $12
+        </small>
+       </article>
+       <article>
+        <span>
+         N
+        </span>
+        <b>
+         Creator Workspace
+        </b>
+        <small>
+         &starf; 4.8 &middot; $8
+        </small>
+       </article>
+       <article>
+        <span>
+         3D
+        </span>
+        <b>
+         Studio Objects
+        </b>
+        <small>
+         &starf; 4.9 &middot; $10
+        </small>
+       </article>
+      </div>
+     </section>
+    </section>
+   </div>
+  </main>
+  <script src="../js/pages/dashboard.js" type="module">
+  </script>
+ </body>
+</html>
