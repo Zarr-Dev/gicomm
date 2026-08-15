@@ -25,7 +25,8 @@ body {
     radial-gradient(circle at top left, rgba(0,0,0,.04), transparent 24%),
     var(--bg);
   color:var(--text);
-  font:14px/1.5 Inter,system-ui,sans-serif;
+  font:14px/1.6 Helvetica,"Helvetica Neue",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
 }
 body.dark {
   --bg:#0e0e0d;
@@ -70,8 +71,9 @@ button {
   display:flex;
   align-items:center;
   gap:10px;
-  font:800 19px Montserrat,sans-serif;
-  letter-spacing:-.03em;
+  font:800 19px 'Helvetica Neue',Helvetica,sans-serif;
+  letter-spacing:-.02em;
+  font-weight:900;
 }
 .brand-mark {
   width:32px;
@@ -80,9 +82,10 @@ button {
   border-radius:10px;
   display:grid;
   place-items:center;
-  font:700 14px Inter, sans-serif;
+  font:900 14px Helvetica,sans-serif;
   background:linear-gradient(135deg,var(--surface-solid),var(--accent-soft));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
+  letter-spacing:-.5px;
 }
 .header nav {
   display:flex;
@@ -159,17 +162,19 @@ button {
   font-weight:700;
 }
 .hero h1,.head h2,.sell h2,.auth-card h1,.dash-title h1 {
-  font-family:Georgia,"Times New Roman",serif;
-  font-weight:400;
-  letter-spacing:-.05em;
+  font-family:"Times New Roman",Times,serif;
+  font-weight:700;
+  letter-spacing:-.03em;
+  line-height:1.15;
 }
 .hero h1 {
-  font-size:clamp(46px,6vw,76px);
-  line-height:.98;
+  font-size:clamp(48px,7vw,78px);
+  line-height:1.1;
   margin:0 0 26px;
 }
 .hero h1 em {
   font-style:italic;
+  font-weight:700;
 }
 .lead {
   max-width:600px;
@@ -267,7 +272,7 @@ button {
   margin-bottom:25px;
 }
 .hero-note strong {
-  font:400 27px/1.1 Georgia,serif;
+  font:700 26px/1.15 "Times New Roman",Times,serif;
   display:block;
 }
 .hero-note span {
@@ -420,7 +425,7 @@ button {
   border-radius:16px;
 }
 .empty h3 {
-  font:400 24px Georgia,serif;
+  font:700 24px "Times New Roman",Times,serif;
   margin:0 0 6px;
 }
 .cat-grid {
@@ -540,7 +545,7 @@ button {
   justify-content:space-between;
 }
 .drawer h3 {
-  font:400 28px Georgia,serif;
+  font:700 28px "Times New Roman",Times,serif;
   margin:0;
 }
 .close {
@@ -635,7 +640,7 @@ button {
   font-size:11px;
 }
 .modal h3 {
-  font:400 32px Georgia,serif;
+  font:700 32px "Times New Roman",Times,serif;
   margin:0;
 }
 .modal .creator {
@@ -734,34 +739,40 @@ button {
   font-size:9px;
 }
 .dash-page {
-  max-width:var(--max);
+  max-width:1500px;
   margin:auto;
-  padding:70px 28px 90px;
+  padding:70px 32px 90px;
+  width:100%;
 }
 .dash-title {
   display:flex;
   justify-content:space-between;
   align-items:end;
-  gap:20px;
-  margin-bottom:30px;
+  gap:40px;
+  margin-bottom:40px;
 }
 .dash-title h1 {
-  font-size:47px;
-  margin:0 0 7px;
+  font-size:52px;
+  margin:0 0 8px;
 }
 .dash-content {
   min-width:0;
 }
 .dash-layout {
   display:grid;
-  grid-template-columns:210px 1fr;
-  gap:18px;
+  grid-template-columns:260px 1fr;
+  gap:32px;
 }
 .dash-nav {
   display:flex;
   flex-direction:column;
-  gap:4px;
-  padding:8px;
+  gap:6px;
+  padding:14px;
+  position:sticky;
+  top:90px;
+  height:fit-content;
+  max-height:calc(100vh - 120px);
+  overflow-y:auto;
 }
 .dash-nav button {
   border:0;
@@ -803,15 +814,15 @@ button {
 }
 .dash-cols {
   display:grid;
-  grid-template-columns:1.4fr .8fr;
-  gap:14px;
+  grid-template-columns:2fr 1fr;
+  gap:24px;
+  width:100%;
 }
 .panel {
-  padding:20px;
+  padding:28px;
   border:1px solid var(--line);
-  border-radius:16px;
+  border-radius:18px;
   background:var(--surface);
-  margin-bottom:14px;
 }
 .panel-head {
   display:flex;

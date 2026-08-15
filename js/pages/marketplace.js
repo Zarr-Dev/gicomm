@@ -597,6 +597,17 @@ elements.modalWrap.onclick = (event) => {
 
 applyTheme(getTheme());
 
+// Theme toggle listeners for all theme buttons
+document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+        const nextTheme = document.body.classList.contains("dark")
+            ? "light"
+            : "dark";
+        setTheme(nextTheme);
+        applyTheme(nextTheme);
+    });
+});
+
 /* ------------------------------ Init ------------------------------ */
 
 renderProducts();
