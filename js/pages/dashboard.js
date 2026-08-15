@@ -74,7 +74,7 @@ document.querySelector("#logout").addEventListener(
     "click",
     () => {
         clearDemoUser();
-        window.location.href = "../pages/index.html";
+        window.location.href = "index.html";
     }
 );
 
