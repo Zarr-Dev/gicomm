@@ -163,7 +163,7 @@ async function replaceCover(product,file) {
   if(!file) return;
   const allowed=["image/jpeg","image/png","image/webp","image/avif"];
   if(!allowed.includes(file.type)||file.size>10*1024*1024) throw new Error("Sampul harus JPG, PNG, WebP, atau AVIF dan maksimal 10 MB.");
-  const path=currentUser.id+"/"+product.id+"/"+crypto.randomUUID()+"-"+safeFileName(file.name);
+  const path=product.seller_id+"/"+product.id+"/"+crypto.randomUUID()+"-"+safeFileName(file.name);
   const upload=await supabase.storage.from("product-assets").upload(path,file,{contentType:file.type,upsert:false});
   if(upload.error) throw upload.error;
   const old=await supabase.from("product_assets").select("id,asset_path").eq("product_id",product.id).eq("asset_kind","cover").maybeSingle();
@@ -204,7 +204,7 @@ $("productForm").addEventListener("submit",async(event)=>{
     const typeId=$("productType").value;
     const categoryId=$("productCategory").value;
     if(!typeId||!categoryId) throw new Error("Jenis produk dan kategori harus memiliki pemetaan aktif.");
-    const payload={seller_id:currentUser.id,product_type_id:typeId,category_id:categoryId,title,slug:slugify($("productSlug").value||title),description:$("productDescription").value.trim(),price:Number($("productPrice").value),currency:"IDR",status:$("productStatus").value};
+    const payload={product_type_id:typeId,category_id:categoryId,title,slug:slugify($("productSlug").value||title),description:$("productDescription").value.trim(),price:Number($("productPrice").value),currency:"IDR",status:$("productStatus").value};
     if(!Number.isFinite(payload.price)||payload.price<0) throw new Error("Harga tidak valid.");
     let saved;
     if($("productId").value){
@@ -212,7 +212,7 @@ $("productForm").addEventListener("submit",async(event)=>{
       if(result.error) throw result.error;
       saved=result.data;
     }else{
-      const result=await supabase.from("products").insert(payload).select().single();
+      const result=await supabase.from("products").insert({...payload,seller_id:currentUser.id}).select().single();
       if(result.error) throw result.error;
       saved=result.data;
     }
