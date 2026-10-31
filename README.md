@@ -1,8 +1,32 @@
-# Gicomm Marketplace
+# Gicomm
 
-> **Create. Discover. Connect.**
+> **Discover. Trade. Grow.**
 
-A modern, user-friendly digital marketplace built with vanilla HTML, CSS, and JavaScript. Gicomm connects digital creators with users in search of high-quality digital products.
+**Vision**  
+To build a trusted and accessible digital commerce platform that connects people with valuable digital products and empowers creators and customers to participate in a better digital economy.
+
+**Our Identity**  
+Gicomm is a digital commerce platform. Its core purpose is to help people discover, buy, sell, and manage digital products. Our direction remains grounded in digital trade while our methods, technology, and capabilities evolve with user needs, responsible innovation, and changes in the global digital economy.
+
+**Our Slogan**  
+**Discover. Trade. Grow.**
+
+- **Discover** — make useful digital products easier to find and evaluate.
+- **Trade** — enable reliable, transparent, and secure digital transactions.
+- **Grow** — help creators improve their products and help customers get lasting value.
+
+**Development Principles**
+1. Security and user trust before scale.
+2. Reliable commerce before feature expansion.
+3. Evidence-led decisions instead of trend chasing.
+4. Privacy, transparency, and responsible data use by design.
+5. Sustainable development within the project's real resources.
+
+Gicomm may adopt technologies such as AI, automation, and advanced discovery when they measurably improve digital commerce. These technologies support the mission; they do not replace it.
+
+---
+
+A digital marketplace prototype built with HTML, CSS, and vanilla JavaScript. The current repository is an early frontend implementation, not a production-ready commerce service. See the status and roadmap below for the capabilities that are implemented versus planned.
 
 ---
 
@@ -155,9 +179,9 @@ All data currently stored in browser localStorage:
 
 ---
 
-## 🔌 Supabase Integration (Ready)
+## 🔌 Supabase Integration (Planned — Not Yet Connected)
 
-This project is **production-ready for Supabase backend**. A complete setup guide is provided in `config/supabase.example.js`.
+Supabase is **not yet connected**. The file `config/supabase.example.js` is a planning template only; real authentication, database access, storage policies, and Row Level Security still need to be implemented and tested.
 
 ### Quick Setup
 
