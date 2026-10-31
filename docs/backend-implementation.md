@@ -103,3 +103,33 @@ No new schema migration should be added unless a concrete missing requirement is
 ## Immutable migration rule
 
 Migrations 001–007 are historical applied migrations. Never edit, rename, delete, or replay them on the existing project. Future schema changes must use a new timestamped migration after inspecting live schema, grants, RLS policies, and migration history.
+
+
+## Phase 7 — Marketplace-first storefront and Admin Control Center
+
+Implemented on branch `feature/digital-marketplace-admin-console`:
+
+- Replaced the editorial landing page with a product-first digital marketplace layout.
+- Added dynamic category navigation from `public.categories`.
+- Storefront reads only `published` products from PostgreSQL and uses signed cover URLs from the private `product-assets` bucket.
+- Wishlist uses the existing `saved_products` table under owner-only RLS.
+- When there are no published products, the storefront renders clearly labeled empty shelf placeholders, not fabricated listings. Live database audit showed zero products at implementation time.
+- Added `admin.html` and `js/pages/admin.js` with overview, product editor, taxonomy controls, revision moderation, and user role management.
+- Product cover and primary file uploads use the existing private Storage buckets and metadata tables. The current UI enforces configured MIME/size allowlists, but browser MIME metadata is not proof of file content. File-signature validation and malware scanning remain required before accepting untrusted seller uploads.
+- Added `requireAdmin()`, which authorizes only `user.app_metadata.role === 'admin'`.
+- Added `supabase/functions/gicomm-admin/index.ts`, using pinned `@supabase/server@1.9.2`. The Edge Function is deployed as `gicomm-admin` with JWT verification enabled. It verifies the current Admin against Auth, lists a limited set of user fields, allows Admin/Member role changes, prevents self-role changes, requires confirmed email for promotion, and protects the last Admin from demotion.
+- No database migration was added. Migrations 001–007 remain unchanged.
+
+### Initial Admin provisioning
+
+The project has no automatically assigned first Admin. After the intended account registers and confirms its email, the project owner must perform a one-time trusted provisioning action in Supabase SQL Editor by updating `auth.users.raw_app_meta_data` for the exact email. The SQL is documented in README. Subsequent role changes use the Admin Control Center. Never place the role in `raw_user_meta_data`.
+
+### Phase 7 verification still required
+
+- Preview browser tests for storefront, empty catalog, category filters, sign-in, wishlist, and theme.
+- First Admin provisioning and admin-only route denial.
+- Product create/edit/publish/archive and image/file uploads with RLS and Storage.
+- Category/type/mapping CRUD and revision approval/rejection.
+- Admin Edge Function user list, role promotion/demotion, self-change denial, and last-Admin protection.
+- Confirm Supabase Auth Site URL/Redirect URLs for preview and production origins.
+- Production file-signature validation and malware scanning before seller uploads are enabled.
