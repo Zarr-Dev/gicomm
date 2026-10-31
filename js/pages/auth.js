@@ -46,12 +46,13 @@ function setMode(nextMode) {
   document.querySelector("#passwordLabel").textContent = isRecovery ? "New password" : "Password";
   passwordInput.autocomplete = isRecovery || isSignup ? "new-password" : "current-password";
   passwordInput.required = !isResetRequest;
+  emailInput.required = !isRecovery;
   confirmPasswordInput.required = isRecovery;
   document.querySelector(".auth-row").hidden = isSignup || isRecovery || isResetRequest;
   forgotLink.hidden = isSignup || isRecovery || isResetRequest;
-  signupLink.parentElement.hidden = isRecovery || isResetRequest;
-  signupLink.textContent = isSignup ? "Sign in instead" : "Create account";
-  signupLink.parentElement.firstChild.textContent = isSignup ? "Already have an account? " : "Need an account? ";
+  signupLink.parentElement.hidden = isRecovery;
+  signupLink.textContent = isSignup ? "Sign in instead" : isResetRequest ? "Back to sign in" : "Create account";
+  signupLink.parentElement.firstChild.textContent = isSignup ? "Already have an account? " : isResetRequest ? "" : "Need an account? ";
   submitButton.textContent = isSignup ? "Create account" : isRecovery ? "Update password" :
     isResetRequest ? "Send recovery link" : "Continue";
   showMessage("");
@@ -74,6 +75,7 @@ async function submit(event) {
     if (mode === "signup") {
       const displayName = displayNameInput.value.trim();
       if (!displayName) throw new Error("Please enter your display name.");
+      if (password.length < 8) throw new Error("Use a password with at least 8 characters.");
       const { data, error } = await supabase.auth.signUp({
         email, password, options: { data: { display_name: displayName } },
       });
@@ -118,7 +120,7 @@ async function submit(event) {
 form.addEventListener("submit", submit);
 signupLink.addEventListener("click", (event) => {
   event.preventDefault();
-  setMode(mode === "signup" ? "signin" : "signup");
+  setMode(mode === "signup" || mode === "reset-request" ? "signin" : "signup");
 });
 forgotLink.addEventListener("click", (event) => {
   event.preventDefault();
