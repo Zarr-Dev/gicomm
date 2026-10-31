@@ -28,7 +28,7 @@
     <button class="round theme-toggle" id="theme" data-theme-toggle="true" type="button" aria-label="Switch to dark mode">
      ☾
     </button>
-    <span class="avatar">
+    <span class="avatar" id="dashboardAvatar">
      ZA
     </span>
    </div>
@@ -37,10 +37,10 @@
    <div class="dash-title">
     <div>
      <p class="eyebrow">
-      DEMO ACCOUNT
+      YOUR ACCOUNT
      </p>
      <h1>
-      Welcome back, Zhar.
+      Welcome back.<span id="accountWelcome"></span>
      </h1>
      <p class="muted">
       Manage your library, wishlist, orders, sales, and profile.
@@ -80,44 +80,36 @@
        <small>
         Library
        </small>
-       <strong>
-        18
-       </strong>
+       <strong>—</strong>
        <span>
-        products
+        not connected yet
        </span>
       </div>
       <div>
        <small>
         Saved
        </small>
-       <strong>
-        06
-       </strong>
+       <strong>—</strong>
        <span>
-        items
+        not connected yet
        </span>
       </div>
       <div>
        <small>
         Orders
        </small>
-       <strong>
-        12
-       </strong>
+       <strong>—</strong>
        <span>
-        completed
+        not connected yet
        </span>
       </div>
       <div>
        <small>
         Sales
        </small>
-       <strong>
-        $128
-       </strong>
+       <strong>—</strong>
        <span>
-        this month
+        not connected yet
        </span>
       </div>
      </div>
@@ -188,10 +180,10 @@
         </div>
         <div>
          <b>
-          Khairul Azhar
+          <span id="profileDisplayName">Account</span>
          </b>
          <small>
-          @zarr.dev
+          <span id="profileEmail"></span>
          </small>
         </div>
        </div>
