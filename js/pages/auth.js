@@ -29,21 +29,21 @@ function setMode(nextMode) {
   const isRecovery = mode === "recovery";
   const isResetRequest = mode === "reset-request";
   document.querySelector(".auth-card .eyebrow").textContent =
-    isSignup ? "CREATE YOUR ACCOUNT" : isRecovery ? "CHOOSE A NEW PASSWORD" :
-    isResetRequest ? "PASSWORD RECOVERY" : "WELCOME BACK";
+    isSignup ? "BUAT AKUN BARU" : isRecovery ? "BUAT KATA SANDI BARU" :
+    isResetRequest ? "PEMULIHAN AKUN" : "SELAMAT DATANG KEMBALI";
   document.querySelector(".auth-card h1").textContent =
-    isSignup ? "Join Gicomm." : isRecovery ? "Set a new password." :
-    isResetRequest ? "Reset your password." : "Sign in to Gicomm.";
+    isSignup ? "Bergabung dengan Gicomm." : isRecovery ? "Atur kata sandi baru." :
+    isResetRequest ? "Pulihkan kata sandi." : "Masuk ke Gicomm.";
   document.querySelector(".auth-card > .muted").textContent =
-    isSignup ? "Create an account to discover and manage digital products." :
-    isRecovery ? "Choose a new password for your Gicomm account." :
-    isResetRequest ? "Enter your account email and we will send a recovery link." :
-    "Access your library, saved products, and dashboard.";
+    isSignup ? "Buat akun untuk menjelajahi dan mengelola produk digital." :
+    isRecovery ? "Pilih kata sandi baru untuk akun Gicomm-mu." :
+    isResetRequest ? "Masukkan email akunmu untuk menerima tautan pemulihan." :
+    "Akses koleksi, produk tersimpan, dan dashboard akunmu.";
   document.querySelector("#displayNameField").hidden = !isSignup;
   document.querySelector("#emailField").hidden = isRecovery;
   document.querySelector("#passwordField").hidden = isResetRequest;
   document.querySelector("#confirmPasswordField").hidden = !isRecovery;
-  document.querySelector("#passwordLabel").textContent = isRecovery ? "New password" : "Password";
+  document.querySelector("#passwordLabel").textContent = isRecovery ? "Kata sandi baru" : "Kata sandi";
   passwordInput.autocomplete = isRecovery || isSignup ? "new-password" : "current-password";
   passwordInput.required = !isResetRequest;
   emailInput.required = !isRecovery;
@@ -51,18 +51,18 @@ function setMode(nextMode) {
   document.querySelector(".auth-row").hidden = isSignup || isRecovery || isResetRequest;
   forgotLink.hidden = isSignup || isRecovery || isResetRequest;
   signupLink.parentElement.hidden = isRecovery;
-  signupLink.textContent = isSignup ? "Sign in instead" : isResetRequest ? "Back to sign in" : "Create account";
-  signupLink.parentElement.firstChild.textContent = isSignup ? "Already have an account? " : isResetRequest ? "" : "Need an account? ";
-  submitButton.textContent = isSignup ? "Create account" : isRecovery ? "Update password" :
-    isResetRequest ? "Send recovery link" : "Continue";
+  signupLink.textContent = isSignup ? "Kembali masuk" : isResetRequest ? "Kembali masuk" : "Buat akun";
+  signupLink.parentElement.firstChild.textContent = isSignup ? "Sudah punya akun? " : isResetRequest ? "" : "Belum punya akun? ";
+  submitButton.textContent = isSignup ? "Buat akun" : isRecovery ? "Update password" :
+    isResetRequest ? "Send recovery link" : "Masuk";
   showMessage("");
 }
 
 function setBusy(busy) {
   submitButton.disabled = busy;
-  submitButton.textContent = busy ? "Please wait…" :
-    mode === "signup" ? "Create account" : mode === "recovery" ? "Update password" :
-    mode === "reset-request" ? "Send recovery link" : "Continue";
+  submitButton.textContent = busy ? "Memproses…" :
+    mode === "signup" ? "Buat akun" : mode === "recovery" ? "Update password" :
+    mode === "reset-request" ? "Send recovery link" : "Masuk";
 }
 
 async function submit(event) {
@@ -74,8 +74,8 @@ async function submit(event) {
     const password = passwordInput.value;
     if (mode === "signup") {
       const displayName = displayNameInput.value.trim();
-      if (!displayName) throw new Error("Please enter your display name.");
-      if (password.length < 8) throw new Error("Use a password with at least 8 characters.");
+      if (!displayName) throw new Error("Masukkan nama tampilan.");
+      if (password.length < 8) throw new Error("Gunakan kata sandi minimal 8 karakter.");
       const { data, error } = await supabase.auth.signUp({
         email, password, options: { data: { display_name: displayName } },
       });
@@ -83,7 +83,7 @@ async function submit(event) {
       if (data.session) window.location.assign(safeNext);
       else {
         setMode("signin");
-        showMessage("Account created. Check your email to confirm the address, then sign in.", "success");
+        showMessage("Akun berhasil dibuat. Periksa email untuk mengonfirmasi alamat, lalu masuk.", "success");
       }
       return;
     }
@@ -101,20 +101,20 @@ async function submit(event) {
         redirectTo: `${window.location.origin}/login.html?mode=recovery`,
       });
       if (error) throw error;
-      showMessage("If an account exists for that email, a password recovery link has been sent.", "success");
+      showMessage("Jika email terdaftar, tautan pemulihan telah dikirim.", "success");
       return;
     }
     if (mode === "recovery") {
-      if (password !== confirmPasswordInput.value) throw new Error("The passwords do not match.");
-      if (password.length < 8) throw new Error("Use a password with at least 8 characters.");
+      if (password !== confirmPasswordInput.value) throw new Error("Kata sandi tidak cocok.");
+      if (password.length < 8) throw new Error("Gunakan kata sandi minimal 8 karakter.");
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       await supabase.auth.signOut();
       setMode("signin");
-      showMessage("Password updated. You can now sign in with your new password.", "success");
+      showMessage("Kata sandi diperbarui. Silakan masuk kembali.", "success");
     }
   } catch (error) {
-    showMessage(error?.message || "Authentication failed. Please try again.", "error");
+    showMessage(error?.message || "Autentikasi gagal. Silakan coba lagi.", "error");
   } finally {
     setBusy(false);
   }
