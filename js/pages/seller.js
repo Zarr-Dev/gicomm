@@ -160,6 +160,7 @@ function openProductForm(product=null) {
   $("sellerDescription").value=product?.description||"";
   $("sellerPrice").value=product?.price??0;
   $("sellerCover").value="";
+  $("sellerSlug").dataset.edited="";
   populateTaxonomy($("sellerType"),$("sellerCategory"),product?.product_type_id||"",product?.category_id||"");
   $("sellerProductForm").scrollIntoView({behavior:"smooth",block:"start"});
 }
@@ -268,6 +269,7 @@ function openRevisionForm(product) {
   $("revisionSlug").value=product.slug;
   $("revisionDescription").value=product.description||"";
   $("revisionPrice").value=product.price;
+  $("revisionSlug").dataset.edited="";
   populateTaxonomy($("revisionType"),$("revisionCategory"),product.product_type_id,product.category_id);
   $("sellerRevisionForm").hidden=false;
   $("sellerRevisionForm").scrollIntoView({behavior:"smooth",block:"start"});
