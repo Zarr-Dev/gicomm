@@ -100,11 +100,11 @@ Gicomm_Marketplace_Final/
 - **Smart Filtering**: Category, price range, format, rating filters
 
 ### 👤 User Dashboard  
-Six dynamic tabs with unique features:
+Six dashboard sections; data-backed features are being connected in phases:
 - **Overview** - Recent activity log
-- **My Library** - 18 saved products in grid layout
-- **Saved** - 6 wishlist items with metadata
-- **Orders** - 12 completed orders with status tracking
+- **My Library** - placeholder until purchase entitlements are implemented
+- **Saved** - will use the persistent saved_products table
+- **Orders** - unavailable until the order lifecycle is implementedus tracking
 - **Selling** - 3 creator products with sales metrics
 - **Settings** - Account preferences and notification toggles
 
