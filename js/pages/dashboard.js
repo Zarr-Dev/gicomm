@@ -7,11 +7,12 @@ const displayName =
   authContext.profile?.display_name ||
   authContext.user.user_metadata?.display_name ||
   authContext.user.email?.split("@")[0] || "Gicomm user";
-const initials = displayName.split(/\\s+/).filter(Boolean).slice(0, 2)
+const initials = displayName.split(/\s+/).filter(Boolean).slice(0, 2)
   .map((part) => part[0].toUpperCase()).join("") || "G";
 
 document.querySelector("#accountWelcome").textContent = `, ${displayName}.`;
 document.querySelector("#dashboardAvatar").textContent = initials;
+document.querySelector("#profileAvatar").textContent = initials;
 document.querySelector("#profileDisplayName").textContent = displayName;
 document.querySelector("#profileEmail").textContent = authContext.user.email || "";
 
