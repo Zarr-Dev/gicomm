@@ -90,7 +90,10 @@ async function submit(event) {
     if (mode === "signin") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      window.location.assign(safeNext);
+      const { data: { user } } = await supabase.auth.getUser();
+      const destination = nextPath ? safeNext :
+        user?.app_metadata?.role === "admin" ? "admin.html" : safeNext;
+      window.location.assign(destination);
       return;
     }
     if (mode === "reset-request") {
