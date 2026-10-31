@@ -19,7 +19,8 @@ index.html                         Marketplace-first storefront
 login.html                         Supabase email authentication
 dashboard.html                     Authenticated customer dashboard
 admin.html                          Admin Control Center
-css/style.css                      Storefront, account, and admin styles
+css/style.css                      Base component styles
+css/gicomm-design-system.css       Unified responsive visual system
 js/components/storage.js            Local theme preference helpers
 js/components/ui.js                 Shared UI helpers
 js/data/products.js                 Legacy demo dataset (not used by live storefront)
@@ -118,3 +119,10 @@ Migrations 001–007 (including the historical 004.1 migration) are already appl
 4. Design persistent cart, order lifecycle, and purchase entitlements.
 5. Add trusted payment integration only after order flows are stable.
 6. Complete file scanning, authorization tests, observability, deployment, and rollback checks.
+
+
+## Frontend redesign
+
+The `feature/complete-frontend-redesign` branch introduces a shared design system across the storefront, authentication, account dashboard, and Admin Control Center. The redesign keeps the existing Vanilla JS/Supabase integration and page selectors intact; it does not change database schema or migrations.
+
+See `docs/release-roadmap.md` for the stacked PR sequence and proposed future migrations. Migration proposals are not applied schema changes.

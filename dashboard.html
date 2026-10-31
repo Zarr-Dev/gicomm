@@ -1,205 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width,initial-scale=1" name="viewport"/>
-  <meta name="description" content="Gicomm Dashboard - Manage your library, wishlist, orders, and sales."/>
-  <meta name="theme-color" content="#f5f5f2"/>
-  <title>
-   Gicomm &mdash; Dashboard
-  </title>
-  <link href="https://fonts.googleapis.com" rel="preconnect"/>
-  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <link href="css/style.css" rel="stylesheet"/>
- </head>
- <body>
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f8fc">
+  <meta name="description" content="Dashboard akun Gicomm.">
+  <title>Dashboard — Gicomm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/gicomm-design-system.css" rel="stylesheet">
+</head>
+<body class="account-page">
   <header class="dash-header">
-   <a class="brand" href="index.html">
-    <span class="brand-mark">
-     G
-    </span>
-    Gicomm
-   </a>
-   <div class="actions">
-    <a href="index.html">
-     Marketplace
-    </a>
-    <button class="round theme-toggle" id="theme" data-theme-toggle="true" type="button" aria-label="Switch to dark mode">
-     ☾
-    </button>
-    <span class="avatar" id="dashboardAvatar">
-     ZA
-    </span>
-   </div>
+    <a class="brand" href="index.html"><span class="brand-mark">G</span><span>gicomm</span></a>
+    <div class="actions">
+      <a href="index.html" class="account-market-link">Marketplace <span>↗</span></a>
+      <button class="round theme-toggle" id="theme" data-theme-toggle="true" type="button" aria-label="Ganti tema">◐</button>
+      <span class="avatar" id="dashboardAvatar">G</span>
+    </div>
   </header>
   <main class="dash-page">
-   <div class="dash-title">
-    <div>
-     <p class="eyebrow">
-      YOUR ACCOUNT
-     </p>
-     <h1>
-      Welcome back.<span id="accountWelcome"></span>
-     </h1>
-     <p class="muted">
-      Manage your library, wishlist, orders, sales, and profile.
-     </p>
-    </div>
-    <a class="primary" href="index.html#discover">
-     Explore products
-    </a>
-   </div>
-   <div class="dash-layout">
-    <aside class="dash-nav">
-     <button class="active" data-tab="Overview">
-      ⌂ Overview
-     </button>
-     <button data-tab="My Library">
-      &square; My Library
-     </button>
-     <button data-tab="Saved">
-      ♡ Saved
-     </button>
-     <button data-tab="Orders">
-      &rdsh; Orders
-     </button>
-     <button data-tab="Selling">
-      &nearrow; Selling
-     </button>
-     <button data-tab="Settings">
-      ⚙ Settings
-     </button>
-     <button id="logout">
-      &rarrhk; Sign out
-     </button>
-    </aside>
-    <section class="dash-content">
-     <div class="stats">
+    <section class="dash-title account-welcome">
       <div>
-       <small>
-        Library
-       </small>
-       <strong>—</strong>
-       <span>
-        not connected yet
-       </span>
+        <p class="eyebrow">RUANG AKUN / OVERVIEW</p>
+        <h1>Selamat datang<span id="accountWelcome"></span></h1>
+        <p class="muted">Kelola aktivitas dan preferensimu di Gicomm.</p>
       </div>
-      <div>
-       <small>
-        Saved
-       </small>
-       <strong>—</strong>
-       <span>
-        not connected yet
-       </span>
-      </div>
-      <div>
-       <small>
-        Orders
-       </small>
-       <strong>—</strong>
-       <span>
-        not connected yet
-       </span>
-      </div>
-      <div>
-       <small>
-        Sales
-       </small>
-       <strong>—</strong>
-       <span>
-        not connected yet
-       </span>
-      </div>
-     </div>
-     <div class="dash-cols">
-      <section class="panel">
-       <div class="panel-head">
-        <div>
-         <h3 id="tabTitle">
-          Recent activity
-         </h3>
-         <p class="muted" id="tabSub">
-          Latest updates from your demo workspace.
-         </p>
-        </div>
-        <button class="secondary">
-         Export
-        </button>
-       </div>
-       <div class="activities">
-        <div>
-         <i></i>
-         <b>Authentication connected</b>
-         <span>Your account session has been verified.</span>
-         <time>Now</time>
-        </div>
-        <div>
-         <i></i>
-         <b>Marketplace data</b>
-         <span>Catalog and wishlist integration are next.</span>
-         <time>Pending</time>
-        </div>
-       </div>
-      </section>
-      <aside class="panel">
-       <p class="eyebrow">
-        PROFILE
-       </p>
-       <div class="profile">
-        <div class="big-avatar" id="profileAvatar">
-         ZA
-        </div>
-        <div>
-         <b>
-          <span id="profileDisplayName">Account</span>
-         </b>
-         <small>
-          <span id="profileEmail"></span>
-         </small>
-        </div>
-       </div>
-       <div class="progress">
-        <div>
-         <span>
-          Profile completion pending
-         </span>
-         <b>
-          —
-         </b>
-        </div>
-        <div class="line">
-         <i>
-         </i>
-        </div>
-       </div>
-       <button class="secondary wide" disabled>
-        Profile editing coming soon
-       </button>
-      </aside>
-     </div>
-     <section class="panel">
-      <div class="panel-head">
-       <div>
-        <p class="eyebrow">
-         NEXT PHASE
-        </p>
-        <h3>
-         Live marketplace data
-        </h3>
-       </div>
-       <a href="index.html#discover">
-        View marketplace &rarr;
-       </a>
-      </div>
-      <p class="muted">Product recommendations will appear here after the live catalog is connected.</p>
-
-     </section>
+      <a class="primary" href="index.html#catalog">Jelajahi produk <span>↗</span></a>
     </section>
-   </div>
+    <div class="dash-layout">
+      <aside class="dash-nav" aria-label="Navigasi akun">
+        <span class="dash-nav-label">MENU AKUN</span>
+        <button class="active" data-tab="Overview"><span>◫</span> Ringkasan</button>
+        <button data-tab="My Library"><span>▤</span> Koleksi saya</button>
+        <button data-tab="Saved"><span>♡</span> Tersimpan</button>
+        <button data-tab="Orders"><span>↗</span> Pesanan</button>
+        <button data-tab="Selling"><span>◇</span> Kreator</button>
+        <button data-tab="Settings"><span>⚙</span> Pengaturan</button>
+        <button id="logout" class="logout-button"><span>↪</span> Keluar akun</button>
+      </aside>
+      <section class="dash-content">
+        <div class="stats">
+          <div><small>KOLEKSI DIGITAL</small><strong>—</strong><span>Belum tersedia</span></div>
+          <div><small>TERSIMPAN</small><strong>—</strong><span>Data belum terhubung</span></div>
+          <div><small>PESANAN</small><strong>—</strong><span>Fitur belum aktif</span></div>
+          <div><small>AKTIVITAS KREATOR</small><strong>—</strong><span>Fitur belum aktif</span></div>
+        </div>
+        <div class="dash-cols">
+          <section class="panel account-activity-panel">
+            <div class="panel-head">
+              <div><span class="eyebrow">AKTIVITAS</span><h3 id="tabTitle">Ringkasan akun</h3><p class="muted" id="tabSub">Sesi akun telah diverifikasi oleh Supabase Auth.</p></div>
+            </div>
+            <div class="activities">
+              <div><i></i><b>Autentikasi aktif</b><span>Sesi akun berhasil diverifikasi.</span><time>Aktif</time></div>
+              <div><i></i><b>Data marketplace</b><span>Integrasi fitur lanjutan sedang disiapkan.</span><time>Berikutnya</time></div>
+            </div>
+          </section>
+          <aside class="panel account-profile-panel">
+            <span class="eyebrow">PROFIL SAYA</span>
+            <div class="profile">
+              <div class="big-avatar" id="profileAvatar">G</div>
+              <div><b><span id="profileDisplayName">Akun Gicomm</span></b><small><span id="profileEmail"></span></small></div>
+            </div>
+            <div class="profile-status"><span class="status-dot"></span> Identitas terautentikasi</div>
+            <p class="profile-hint">Pengelolaan profil lengkap akan tersedia pada fase pengembangan berikutnya.</p>
+            <button class="secondary wide" type="button" disabled>Edit profil — segera hadir</button>
+          </aside>
+        </div>
+        <section class="panel account-next-panel">
+          <div class="panel-head"><div><span class="eyebrow">ROADMAP</span><h3>Ekosistem Gicomm terus berkembang</h3></div><a href="index.html#catalog">Lihat marketplace ↗</a></div>
+          <p class="muted">Koleksi, pesanan, dan fitur kreator akan diaktifkan setelah alur backend terkait selesai diuji.</p>
+        </section>
+      </section>
+    </div>
   </main>
-  <script src="js/pages/dashboard.js" type="module">
-  </script>
- </body>
+  <script type="module" src="js/pages/dashboard.js"></script>
+</body>
 </html>
