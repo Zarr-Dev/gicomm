@@ -1219,3 +1219,19 @@ body.dark .admin-nav-item:hover,body.dark .admin-nav-item.active{background:#302
 .admin-toast.show{opacity:1;transform:translateY(0)}
 @media(max-width:950px){.admin-layout{grid-template-columns:190px minmax(0,1fr)}.admin-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-overview-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.admin-topbar{padding:0 14px}.admin-topbar-center{display:none}.admin-topbar-user{gap:7px}.admin-layout{display:block}.admin-sidebar{position:static;height:auto;padding:10px;display:flex;flex-direction:row;overflow:auto;border-right:0;border-bottom:1px solid var(--admin-line)}.admin-side-label,.admin-sidebar-bottom{display:none}.admin-nav-item{white-space:nowrap;padding:10px;font-size:9px}.admin-main{padding:25px 14px 45px}.admin-page-heading h1{font-size:24px}.admin-stat-grid{gap:8px}.admin-stat-grid article{padding:13px}.admin-stat-grid strong{font-size:22px}.admin-quick-actions{grid-template-columns:1fr}.admin-form-grid{grid-template-columns:1fr}.admin-span-2{grid-column:auto}.admin-section-toolbar{align-items:flex-start;flex-direction:column}.admin-inline-form{align-items:stretch;flex-direction:column}.admin-inline-form label{min-width:0;width:100%}.admin-form-actions{align-items:flex-start;flex-direction:column}}
+
+/* Marketplace-first fold: keep product shelves close to the top of the page. */
+.market-hero{min-height:174px;margin-top:18px;padding:22px 42px;grid-template-columns:1.25fr .75fr}
+.market-hero h1{font-size:clamp(30px,3.2vw,41px);margin:9px 0 7px;letter-spacing:-1.7px}
+.market-hero p{font-size:10px;margin-bottom:12px;line-height:1.55}
+.market-hero-cta{padding:9px 13px;font-size:9px}
+.market-hero-art{height:125px}
+.tile-main{width:104px;height:116px;border-radius:18px}
+.tile-main span{width:43px;height:43px;font-size:27px}
+.tile-main b{font-size:10px}
+.tile-small{width:59px;height:54px;font-size:17px}
+.orbit-one{width:220px;height:116px}.orbit-two{width:160px;height:160px}
+.market-category-section{padding-top:23px;padding-bottom:22px}
+.market-section-heading h2{font-size:20px}
+.market-catalog{padding-top:0}
+@media(max-width:640px){.market-hero{padding:22px 21px;min-height:0}.market-hero-art{height:118px}.market-category-section{padding-block:23px 18px}}
