@@ -36,3 +36,14 @@ export async function signOut() {
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
 }
+
+
+export async function requireAdmin() {
+  const context = await requireUser();
+  if (!context) return null;
+  if (context.user.app_metadata?.role !== "admin") {
+    window.location.replace("/dashboard.html?access=denied");
+    return null;
+  }
+  return context;
+}
