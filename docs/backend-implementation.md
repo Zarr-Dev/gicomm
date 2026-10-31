@@ -133,3 +133,8 @@ The project has no automatically assigned first Admin. After the intended accoun
 - Admin Edge Function user list, role promotion/demotion, self-change denial, and last-Admin protection.
 - Confirm Supabase Auth Site URL/Redirect URLs for preview and production origins.
 - Production file-signature validation and malware scanning before seller uploads are enabled.
+
+
+## Frontend redesign phase
+
+The complete visual refresh is isolated in PR #4. It unifies storefront, auth, account, and Admin surfaces through `css/gicomm-design-system.css`, while preserving existing JavaScript modules and backend contracts. No database migration is included.
