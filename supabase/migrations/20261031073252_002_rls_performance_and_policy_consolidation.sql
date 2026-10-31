@@ -1,0 +1,1 @@
+-- Historical migration 002: source SQL retained in Supabase migration history. See README for recovery note.
