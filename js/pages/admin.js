@@ -135,6 +135,7 @@ function openProductForm(product=null) {
   $("productForm").hidden=false;
   $("productFormTitle").textContent=product?"Edit produk":"Tambah produk";
   $("productId").value=product?.id||"";
+  $("productSlug").dataset.edited = "";
   $("productTitle").value=product?.title||"";
   $("productSlug").value=product?.slug||"";
   $("productDescription").value=product?.description||"";
