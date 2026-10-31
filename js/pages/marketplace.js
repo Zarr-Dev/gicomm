@@ -1,614 +1,223 @@
-import { PRODUCTS } from "../data/products.js";
-import {
-    getCart,
-    saveCart,
-    getSavedIds,
-    saveSavedIds,
-    getTheme,
-    setTheme,
-} from "../components/storage.js";
-import {
-    showToast,
-    setTheme as applyTheme,
-    toggleTheme,
-} from "../components/ui.js";
+import { supabase } from "../lib/supabase.js";
+import { getTheme, setTheme } from "../components/storage.js";
 
-const state = {
-    query: "",
-    category: "All",
-    price: "all",
-    format: "all",
-    sort: "featured",
+const state = { user: null, products: [], categories: [], saved: new Set(), category: "all", query: "", sort: "newest" };
+const el = (id) => document.getElementById(id);
+const escapeHTML = (value = "") => String(value).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const formatPrice = (value, currency = "IDR") => {
+  try { return new Intl.NumberFormat("id-ID", { style:"currency", currency, maximumFractionDigits:0 }).format(Number(value || 0)); }
+  catch { return String(value || 0) + " " + currency; }
 };
+let toastTimer;
 
-let cart = getCart();
-let saved = getSavedIds();
-
-const elements = {
-    grid: document.querySelector("#grid"),
-    resultText: document.querySelector("#resultText"),
-    emptyState: document.querySelector("#empty"),
-    searchInput: document.querySelector("#search"),
-    searchButton: document.querySelector("#searchBtn"),
-    filterToggle: document.querySelector("#filterToggle"),
-    filters: document.querySelector("#filters"),
-    sort: document.querySelector("#sort"),
-    toast: document.querySelector("#toast"),
-    drawer: document.querySelector("#drawer"),
-    backdrop: document.querySelector("#backdrop"),
-    cartItems: document.querySelector("#cartItems"),
-    cartCount: document.querySelector("#cartCount"),
-    cartTotal: document.querySelector("#total"),
-    modalWrap: document.querySelector("#modalWrap"),
-    modal: document.querySelector("#modal"),
-};
-
-/* ------------------------------ Filtering ------------------------------ */
-
-function getVisibleProducts() {
-    const query = state.query.trim().toLowerCase();
-
-    const filtered = PRODUCTS.filter((product) => {
-        const searchableText = [
-            product.name,
-            product.category,
-            product.format,
-            product.creator,
-            product.description,
-        ]
-            .join(" ")
-            .toLowerCase();
-
-        const matchesQuery =
-            !query || searchableText.includes(query);
-
-        const matchesCategory =
-            state.category === "All" ||
-            product.category === state.category;
-
-        const matchesPrice =
-            state.price === "all" ||
-            (state.price === "free" && product.price === 0) ||
-            (state.price !== "free" &&
-                product.price <= Number(state.price));
-
-        const matchesFormat =
-            state.format === "all" ||
-            product.format === state.format;
-
-        return (
-            matchesQuery &&
-            matchesCategory &&
-            matchesPrice &&
-            matchesFormat
-        );
-    });
-
-    switch (state.sort) {
-        case "rating":
-            filtered.sort((a, b) => b.rating - a.rating);
-            break;
-        case "low":
-            filtered.sort((a, b) => a.price - b.price);
-            break;
-        case "high":
-            filtered.sort((a, b) => b.price - a.price);
-            break;
-        case "new":
-            filtered.sort(
-                (a, b) =>
-                    Number(b.isNew) - Number(a.isNew)
-            );
-            break;
-        default:
-            break;
-    }
-
-    return filtered;
+function toast(message) {
+  const node = el("toast");
+  node.textContent = message;
+  node.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => node.classList.remove("show"), 2400);
 }
 
-/* ------------------------------ Rendering ------------------------------ */
+function setThemeUI(theme) {
+  document.body.classList.toggle("dark", theme === "dark");
+  document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+    button.setAttribute("aria-label", theme === "dark" ? "Ganti ke tema terang" : "Ganti ke tema gelap");
+  });
+}
+
+async function loadIdentity() {
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error) return;
+  state.user = user;
+  if (!user) return;
+
+  el("signInLink").hidden = true;
+  el("accountLink").hidden = false;
+  el("accountLink").textContent = user.user_metadata?.display_name || user.email?.split("@")[0] || "Akun";
+  if (user.app_metadata?.role === "admin") el("adminLink").hidden = false;
+
+  const { data, error: savedError } = await supabase
+    .from("saved_products").select("product_id").eq("user_id", user.id);
+  if (!savedError) state.saved = new Set((data || []).map((row) => row.product_id));
+}
+
+async function loadCatalog() {
+  el("resultText").textContent = "Memuat katalog...";
+  const [categoryResult, productResult] = await Promise.all([
+    supabase.from("categories").select("id,name,slug,description").eq("is_active", true).order("name"),
+    supabase.from("products").select("id,seller_id,product_type_id,category_id,title,slug,description,price,currency,created_at").eq("status", "published").order("created_at", { ascending:false }),
+  ]);
+  if (categoryResult.error) throw categoryResult.error;
+  if (productResult.error) throw productResult.error;
+  state.categories = categoryResult.data || [];
+  state.products = productResult.data || [];
+
+  const productIds = state.products.map((p) => p.id);
+  if (productIds.length) {
+    const sellerIds = [...new Set(state.products.map((p) => p.seller_id))];
+    const typeIds = [...new Set(state.products.map((p) => p.product_type_id))];
+    const [assetResult, profileResult, typeResult] = await Promise.all([
+      supabase.from("product_assets").select("product_id,asset_path,asset_kind,sort_order").in("product_id", productIds).eq("asset_kind", "cover"),
+      supabase.from("profiles").select("id,display_name").in("id", sellerIds),
+      supabase.from("product_types").select("id,name").in("id", typeIds),
+    ]);
+    if (!assetResult.error) {
+      const signed = await Promise.all((assetResult.data || []).map(async (asset) => {
+        const { data } = await supabase.storage.from("product-assets").createSignedUrl(asset.asset_path, 3600);
+        return [asset.product_id, data?.signedUrl || null];
+      }));
+      const assetMap = new Map(signed);
+      state.products.forEach((p) => { p.cover_url = assetMap.get(p.id) || null; });
+    }
+    const sellers = new Map((profileResult.data || []).map((p) => [p.id, p.display_name]));
+    const types = new Map((typeResult.data || []).map((t) => [t.id, t.name]));
+    state.products.forEach((p) => {
+      p.seller_name = sellers.get(p.seller_id) || "Kreator Gicomm";
+      p.type_name = types.get(p.product_type_id) || "Produk digital";
+    });
+  }
+  renderCategories();
+  renderProducts();
+}
+
+function renderCategories() {
+  const all = [{ id:"all", name:"Semua kategori" }, ...state.categories];
+  el("categoryList").innerHTML = all.map((cat) =>
+    '<button type="button" class="category-pill ' + (state.category === cat.id ? "active" : "") +
+    '" data-category="' + escapeHTML(cat.id) + '">' + escapeHTML(cat.name) + "</button>"
+  ).join("");
+}
+
+function visibleProducts() {
+  const items = state.products.filter((p) => {
+    const cat = state.categories.find((c) => c.id === p.category_id);
+    const haystack = [p.title,p.description,p.type_name,p.seller_name,cat?.name].join(" ").toLowerCase();
+    return (!state.query || haystack.includes(state.query)) &&
+      (state.category === "all" || p.category_id === state.category);
+  });
+  if (state.sort === "title") items.sort((a,b) => a.title.localeCompare(b.title,"id"));
+  if (state.sort === "price-low") items.sort((a,b) => Number(a.price)-Number(b.price));
+  if (state.sort === "price-high") items.sort((a,b) => Number(b.price)-Number(a.price));
+  if (state.sort === "newest") items.sort((a,b) => new Date(b.created_at)-new Date(a.created_at));
+  return items;
+}
 
 function renderProducts() {
-    const products = getVisibleProducts();
+  const items = visibleProducts();
+  el("resultText").textContent = state.products.length ? items.length + " produk tersedia" : "Etalase sedang disiapkan";
+  el("emptyState").hidden = state.products.length > 0 || Boolean(state.query) || state.category !== "all";
+  el("searchEmpty").hidden = !(state.products.length > 0 && items.length === 0);
 
-    elements.resultText.textContent =
-        `${products.length} products available`;
+  if (!state.products.length) {
+    el("productGrid").innerHTML = Array.from({length:8}, (_,i) =>
+      '<article class="market-product-card market-placeholder-card" aria-label="Slot produk kosong">' +
+        '<div class="market-product-cover"><span>＋</span></div>' +
+        '<div class="market-product-info"><div class="market-product-tags"><span>AREA ETALASE</span></div>' +
+        '<h3>Ruang produk ' + (i+1) + '</h3><p>Tempat untuk karya digital kreator Gicomm berikutnya.</p>' +
+        '<div class="market-product-bottom"><span class="market-product-price">Segera hadir</span></div></div></article>'
+    ).join("");
+    return;
+  }
 
-    elements.emptyState.hidden = products.length > 0;
-
-    elements.grid.innerHTML = products
-        .map(
-            (product) => `
-                <article class="product">
-                    <div class="art">
-                        <span>${product.mark}</span>
-                    </div>
-
-                    <div class="info">
-                        <b>${product.name}</b>
-
-                        <p>${product.description}</p>
-
-                        <div class="meta">
-                            <span>
-                                ★ ${product.rating}
-                                · ${product.category}
-                            </span>
-                            <strong>$${product.price}</strong>
-                        </div>
-
-                        <div class="product-actions">
-                            <button
-                                class="secondary"
-                                data-view="${product.id}"
-                            >
-                                View
-                            </button>
-
-                            <button
-                                class="icon ${
-                                    saved.has(product.id)
-                                        ? "saved"
-                                        : ""
-                                }"
-                                data-save="${product.id}"
-                                aria-label="Save product"
-                            >
-                                ${
-                                    saved.has(product.id)
-                                        ? "♥"
-                                        : "♡"
-                                }
-                            </button>
-
-                            <button
-                                class="icon"
-                                data-add="${product.id}"
-                                aria-label="Add to cart"
-                            >
-                                ＋
-                            </button>
-                        </div>
-                    </div>
-                </article>
-            `
-        )
-        .join("");
-}
-
-function renderCart() {
-    const count = cart.reduce(
-        (total, item) => total + item.quantity,
-        0
-    );
-
-    const total = cart.reduce(
-        (sum, item) =>
-            sum + item.price * item.quantity,
-        0
-    );
-
-    elements.cartCount.textContent = count;
-    elements.cartTotal.textContent = `$${total.toFixed(2)}`;
-
-    elements.cartItems.innerHTML =
-        cart.length > 0
-            ? cart
-                  .map(
-                      (item) => `
-                        <div class="cart-item">
-                            <div class="thumb">${item.mark}</div>
-
-                            <div>
-                                <b>${item.name}</b>
-                                <small>
-                                    $${item.price} ·
-                                    ${item.quantity} item
-                                </small>
-                            </div>
-
-                            <button
-                                data-remove="${item.id}"
-                            >
-                                Remove
-                            </button>
-                        </div>
-                    `
-                  )
-                  .join("")
-            : `
-                <div
-                    style="
-                        padding:45px 0;
-                        text-align:center;
-                        color:var(--muted);
-                        font-size:11px;
-                    "
-                >
-                    Your bag is empty.
-                </div>
-            `;
-}
-
-/* ------------------------------ Product actions ------------------------------ */
-
-function addToCart(productId) {
-    const product = PRODUCTS.find(
-        (item) => item.id === productId
-    );
-
-    if (!product) return;
-
-    const existing = cart.find(
-        (item) => item.id === productId
-    );
-
-    if (existing) {
-        existing.quantity += 1;
-    } else {
-        cart.push({
-            ...product,
-            quantity: 1,
-        });
-    }
-
-    saveCart(cart);
-    renderCart();
-
-    showToast(
-        elements.toast,
-        `${product.name} added to your bag.`
-    );
-}
-
-function toggleSaved(productId) {
-    if (saved.has(productId)) {
-        saved.delete(productId);
-        showToast(
-            elements.toast,
-            "Removed from wishlist."
-        );
-    } else {
-        saved.add(productId);
-        showToast(
-            elements.toast,
-            "Saved to wishlist."
-        );
-    }
-
-    saveSavedIds(saved);
-    renderProducts();
+  el("productGrid").innerHTML = items.map((p) => {
+    const category = state.categories.find((c) => c.id === p.category_id)?.name || "Digital";
+    const cover = p.cover_url
+      ? '<img src="' + escapeHTML(p.cover_url) + '" alt="' + escapeHTML(p.title) + '">'
+      : "<span>G</span>";
+    return '<article class="market-product-card">' +
+      '<div class="market-product-cover">' + cover + '</div>' +
+      '<div class="market-product-info"><div class="market-product-tags"><span>' + escapeHTML(p.type_name) +
+      '</span><span>' + escapeHTML(category) + '</span></div><h3>' + escapeHTML(p.title) +
+      '</h3><p>' + escapeHTML(p.description) + '</p><div class="market-product-bottom">' +
+      '<span class="market-product-price">' + formatPrice(p.price,p.currency) + '</span>' +
+      '<div class="market-product-actions"><button type="button" data-view="' + p.id + '">Detail</button>' +
+      '<button type="button" data-save="' + p.id + '" aria-label="Simpan produk">' +
+      (state.saved.has(p.id) ? "♥" : "♡") + '</button></div></div>' +
+      '<span class="market-product-seller">Oleh ' + escapeHTML(p.seller_name) + '</span></div></article>';
+  }).join("");
 }
 
 function openProduct(productId) {
-    const product = PRODUCTS.find(
-        (item) => item.id === productId
-    );
-
-    if (!product) return;
-
-    elements.modal.innerHTML = `
-        <button
-            class="modal-close"
-            id="closeModal"
-            aria-label="Close"
-        >
-            ×
-        </button>
-
-        <div class="modal-art">
-            ${product.mark}
-        </div>
-
-        <div>
-            <p class="eyebrow">
-                ${product.category.toUpperCase()}
-                · ${product.format.toUpperCase()}
-            </p>
-
-            <h3>${product.name}</h3>
-
-            <p class="creator">
-                by ${product.creator}
-                · ★ ${product.rating}
-            </p>
-
-            <p>${product.description}</p>
-
-            <div class="features">
-                ✓ Instant delivery
-                <br><br>
-                ✓ Creator updates
-                <br><br>
-                ✓ License information
-            </div>
-
-            <div class="price">
-                $${product.price}
-            </div>
-
-            <button
-                class="primary wide"
-                id="modalAdd"
-            >
-                Add to bag
-            </button>
-        </div>
-    `;
-
-    elements.modalWrap.classList.add("on");
-
-    document.querySelector("#closeModal").onclick = () => {
-        elements.modalWrap.classList.remove("on");
-    };
-
-    document.querySelector("#modalAdd").onclick = () => {
-        addToCart(product.id);
-        elements.modalWrap.classList.remove("on");
-    };
+  const p = state.products.find((item) => item.id === productId);
+  if (!p) return;
+  const category = state.categories.find((c) => c.id === p.category_id)?.name || "Digital";
+  el("modalCategory").textContent = (p.type_name || "Produk digital") + " · " + category;
+  el("modalTitle").textContent = p.title;
+  el("modalDescription").textContent = p.description || "Belum ada deskripsi.";
+  el("modalPrice").textContent = formatPrice(p.price,p.currency);
+  el("modalSeller").textContent = "Dibuat oleh " + p.seller_name;
+  el("modalImage").innerHTML = p.cover_url
+    ? '<img src="' + escapeHTML(p.cover_url) + '" alt="' + escapeHTML(p.title) + '">'
+    : "<span>G</span>";
+  el("modalSave").dataset.save = p.id;
+  el("modalSave").textContent = state.saved.has(p.id) ? "Hapus dari wishlist" : "Simpan ke wishlist";
+  el("productModal").hidden = false;
 }
 
-/* ------------------------------ Search / filters ------------------------------ */
-
-function runSearch() {
-    state.query = elements.searchInput.value;
-
-    renderProducts();
-
-    document
-        .querySelector("#discover")
-        .scrollIntoView({ behavior: "smooth" });
+async function toggleSaved(productId) {
+  if (!state.user) {
+    window.location.href = "login.html?next=" + encodeURIComponent(window.location.pathname + window.location.search);
+    return;
+  }
+  const exists = state.saved.has(productId);
+  const result = exists
+    ? await supabase.from("saved_products").delete().eq("user_id",state.user.id).eq("product_id",productId)
+    : await supabase.from("saved_products").insert({user_id:state.user.id,product_id:productId});
+  if (result.error) { toast(result.error.message); return; }
+  if (exists) state.saved.delete(productId); else state.saved.add(productId);
+  renderProducts();
+  if (!el("productModal").hidden) el("modalSave").textContent = state.saved.has(productId) ? "Hapus dari wishlist" : "Simpan ke wishlist";
+  toast(exists ? "Produk dihapus dari wishlist." : "Produk disimpan ke wishlist.");
 }
 
-function resetFilters() {
-    Object.assign(state, {
-        query: "",
-        category: "All",
-        price: "all",
-        format: "all",
-        sort: "featured",
-    });
-
-    elements.searchInput.value = "";
-    elements.sort.value = "featured";
-
-    document
-        .querySelectorAll(".chips button")
-        .forEach((button) => button.classList.remove("selected"));
-
-    document
-        .querySelector('[data-cat="All"]')
-        .classList.add("selected");
-
-    document
-        .querySelector('[data-price="all"]')
-        .classList.add("selected");
-
-    document
-        .querySelector('[data-format="all"]')
-        .classList.add("selected");
-
-    renderProducts();
-}
-
-/* ------------------------------ Drawer ------------------------------ */
-
-function openCart() {
-    elements.drawer.classList.add("on");
-    elements.backdrop.classList.add("on");
-}
-
-function closeCart() {
-    elements.drawer.classList.remove("on");
-    elements.backdrop.classList.remove("on");
-}
-
-/* ------------------------------ Events ------------------------------ */
-
-elements.searchButton?.addEventListener("click", runSearch);
-
-elements.searchInput?.addEventListener(
-    "keydown",
-    (event) => {
-        if (event.key === "Enter") runSearch();
-    }
-);
-
-document.querySelectorAll("[data-search]").forEach(
-    (button) => {
-        button.onclick = () => {
-            elements.searchInput.value =
-                button.dataset.search;
-
-            runSearch();
-        };
-    }
-);
-
-document.querySelector("#focusSearch").onclick = () => {
-    elements.searchInput.focus();
-};
-
-document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
-    button.addEventListener("click", () => {
-        const nextTheme =
-            document.body.classList.contains("dark")
-                ? "light"
-                : "dark";
-
-        setTheme(nextTheme);
-        applyTheme(nextTheme);
-    });
+el("search").addEventListener("input", (event) => {
+  state.query = event.target.value.trim().toLowerCase();
+  renderProducts();
 });
-
-elements.filterToggle.onclick = () => {
-    elements.filters.classList.toggle("open");
-};
-
-elements.sort.onchange = (event) => {
-    state.sort = event.target.value;
-    renderProducts();
-};
-
-document.querySelectorAll("[data-cat]").forEach(
-    (button) => {
-        button.onclick = () => {
-            document
-                .querySelectorAll("[data-cat]")
-                .forEach((item) =>
-                    item.classList.remove("selected")
-                );
-
-            button.classList.add("selected");
-            state.category = button.dataset.cat;
-
-            renderProducts();
-        };
-    }
-);
-
-document.querySelectorAll("[data-price]").forEach(
-    (button) => {
-        button.onclick = () => {
-            document
-                .querySelectorAll("[data-price]")
-                .forEach((item) =>
-                    item.classList.remove("selected")
-                );
-
-            button.classList.add("selected");
-            state.price = button.dataset.price;
-
-            renderProducts();
-        };
-    }
-);
-
-document
-    .querySelectorAll("[data-format]")
-    .forEach((button) => {
-        button.onclick = () => {
-            document
-                .querySelectorAll("[data-format]")
-                .forEach((item) =>
-                    item.classList.remove("selected")
-                );
-
-            button.classList.add("selected");
-            state.format = button.dataset.format;
-
-            renderProducts();
-        };
-    });
-
-document
-    .querySelectorAll("[data-category]")
-    .forEach((button) => {
-        button.onclick = () => {
-            state.category = button.dataset.category;
-
-            document
-                .querySelectorAll("[data-cat]")
-                .forEach((item) => {
-                    item.classList.toggle(
-                        "selected",
-                        item.dataset.cat === state.category
-                    );
-                });
-
-            document
-                .querySelector("#discover")
-                .scrollIntoView({
-                    behavior: "smooth",
-                });
-
-            renderProducts();
-        };
-    });
-
-document.querySelector("#reset").onclick =
-    resetFilters;
-
-elements.grid.addEventListener("click", (event) => {
-    const viewButton =
-        event.target.closest("[data-view]");
-    const addButton =
-        event.target.closest("[data-add]");
-    const saveButton =
-        event.target.closest("[data-save]");
-
-    if (viewButton) {
-        openProduct(Number(viewButton.dataset.view));
-    }
-
-    if (addButton) {
-        addToCart(Number(addButton.dataset.add));
-    }
-
-    if (saveButton) {
-        toggleSaved(Number(saveButton.dataset.save));
-    }
+el("searchBtn").addEventListener("click", () => {
+  el("search").focus();
+  state.query = el("search").value.trim().toLowerCase();
+  renderProducts();
 });
-
-document.querySelector("#openCart").onclick =
-    openCart;
-
-document.querySelector("#closeCart").onclick =
-    closeCart;
-
-elements.backdrop.onclick = closeCart;
-
-elements.cartItems.addEventListener(
-    "click",
-    (event) => {
-        const button =
-            event.target.closest("[data-remove]");
-
-        if (!button) return;
-
-        const id = Number(button.dataset.remove);
-
-        cart = cart.filter(
-            (item) => item.id !== id
-        );
-
-        saveCart(cart);
-        renderCart();
-    }
-);
-
-document.querySelector("#checkout").onclick = () => {
-    showToast(
-        elements.toast,
-        cart.length > 0
-            ? "Checkout demo is ready for backend integration."
-            : "Your bag is empty."
-    );
-};
-
-elements.modalWrap.onclick = (event) => {
-    if (event.target === elements.modalWrap) {
-        elements.modalWrap.classList.remove("on");
-    }
-};
-
-/* ------------------------------ Theme ------------------------------ */
-
-applyTheme(getTheme());
-
-// Theme toggle listeners for all theme buttons
-document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
-    button.addEventListener("click", () => {
-        const nextTheme = document.body.classList.contains("dark")
-            ? "light"
-            : "dark";
-        setTheme(nextTheme);
-        applyTheme(nextTheme);
-    });
+el("categoryList").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-category]");
+  if (!button) return;
+  state.category = button.dataset.category;
+  renderCategories();
+  renderProducts();
 });
+el("sort").addEventListener("change", (event) => { state.sort = event.target.value; renderProducts(); });
+el("productGrid").addEventListener("click", (event) => {
+  const view = event.target.closest("[data-view]");
+  const save = event.target.closest("[data-save]");
+  if (view) openProduct(view.dataset.view);
+  if (save) toggleSaved(save.dataset.save);
+});
+el("modalSave").addEventListener("click", () => toggleSaved(el("modalSave").dataset.save));
+document.querySelectorAll("[data-close-modal]").forEach((node) => node.addEventListener("click", () => { el("productModal").hidden = true; }));
+el("clearSearch").addEventListener("click", () => {
+  state.query = "";
+  state.category = "all";
+  el("search").value = "";
+  renderCategories();
+  renderProducts();
+});
+document.querySelectorAll("[data-theme-toggle]").forEach((button) => button.addEventListener("click", () => {
+  const next = document.body.classList.contains("dark") ? "light" : "dark";
+  setTheme(next);
+  setThemeUI(next);
+}));
 
-/* ------------------------------ Init ------------------------------ */
-
-renderProducts();
-renderCart();
+setThemeUI(getTheme());
+try {
+  await loadIdentity();
+  await loadCatalog();
+} catch (error) {
+  console.error("Gicomm catalog failed to load:", error);
+  el("resultText").textContent = "Katalog belum dapat dimuat";
+  el("productGrid").innerHTML = "";
+  el("emptyState").hidden = true;
+  el("searchEmpty").hidden = false;
+  el("searchEmpty").querySelector("h3").textContent = "Koneksi katalog belum tersedia.";
+  el("searchEmpty").querySelector("p").textContent = "Silakan coba beberapa saat lagi.";
+}
