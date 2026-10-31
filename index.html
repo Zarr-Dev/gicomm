@@ -1,360 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width,initial-scale=1" name="viewport"/>
-  <meta name="description" content="Gicomm - Digital marketplace for creators and teams. Discover, buy, and sell digital products easily."/>
-  <meta name="theme-color" content="#f5f5f2"/>
-  <title>
-   Gicomm &mdash; Digital Marketplace
-  </title>
-  <link href="https://fonts.googleapis.com" rel="preconnect"/>
-  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <link href="css/style.css" rel="stylesheet"/>
- </head>
- <body>
-  <header class="header">
-   <a class="brand" href="index.html">
-    <span class="brand-mark">
-     G
-    </span>
-    Gicomm
-   </a>
-   <nav>
-    <a class="active" href="#discover">
-     Discover
-    </a>
-    <a href="#categories">
-     Categories
-    </a>
-    <a href="#sell">
-     Sell
-    </a>
-   </nav>
-   <div class="actions">
-    <button class="round" id="focusSearch" aria-label="Focus search">
-     ⌕
-    </button>
-    <button type="button" class="round cart" id="openCart" aria-label="Open cart">
-     ⊞
-     <b id="cartCount">
-      0
-     </b>
-    </button>
-    <button class="round theme-toggle" data-theme-toggle="true" aria-label="Switch to dark mode" type="button">
-     ☾
-    </button>
-    <a class="signin" href="login.html">
-     Sign in
-    </a>
-    <a class="avatar" href="dashboard.html">
-     ZA
-    </a>
-   </div>
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f7fb">
+  <meta name="description" content="Gicomm — marketplace produk digital untuk aplikasi, e-book, game, film, dan aset kreatif.">
+  <title>Gicomm — Marketplace Produk Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="storefront">
+  <div class="market-topline">Temukan karya digital. Dukung kreator. <span>Selamat datang di Gicomm.</span></div>
+  <header class="market-header">
+    <a class="market-brand" href="index.html" aria-label="Gicomm beranda"><span class="market-brand-mark">G</span><span>gicomm</span></a>
+    <label class="market-search" for="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Cari aplikasi, e-book, game, aset digital..." autocomplete="off"><button id="searchBtn" type="button">Cari</button></label>
+    <div class="market-actions">
+      <button class="market-icon-button theme-toggle" data-theme-toggle="true" type="button" aria-label="Ganti tema">◐</button>
+      <a class="market-login" id="signInLink" href="login.html">Masuk</a>
+      <a class="market-account" id="accountLink" href="dashboard.html" hidden>Akun</a>
+      <a class="market-admin-link" id="adminLink" href="admin.html" hidden>Admin</a>
+    </div>
   </header>
+  <nav class="market-nav" aria-label="Navigasi utama"><a class="active" href="#catalog">Beranda</a><a href="#categories">Kategori</a><a href="#catalog">Produk digital</a><a href="#creator">Mulai berjualan</a></nav>
   <main>
-   <section class="hero">
-    <div>
-     <p class="eyebrow">
-      GICOMM MARKETPLACE
-     </p>
-     <h1>
-      Discover digital tools
-      <br/>
-      <em>
-       built for sharper work.
-      </em>
-     </h1>
-     <p class="lead">
-      Templates, software, assets, workflows, and creator-built resources in one focused marketplace.
-     </p>
-     <div class="searchbox">
-      <span>
-       ⌕
-      </span>
-      <input id="search" placeholder="Search products, categories, or use cases..."/>
-      <button id="searchBtn">
-       Search
-      </button>
-     </div>
-     <div class="suggestions">
-      <span>
-       Try:
-      </span>
-      <button data-search="UI">
-       UI Kits
-      </button>
-      <button data-search="Notion">
-       Notion
-      </button>
-      <button data-search="website">
-       Website
-      </button>
-      <button data-search="3D">
-       3D
-      </button>
-     </div>
-    </div>
-    <div class="hero-side">
-     <div class="hero-note">
-      <small>
-       GICOMM NOTE
-      </small>
-      <strong>
-       Great products deserve better discovery.
-      </strong>
-      <span>
-       Built for modern creators and teams.
-      </span>
-     </div>
-    </div>
-   </section>
-   <section class="section" id="discover">
-    <div class="head">
-     <div>
-      <p class="eyebrow">
-       DISCOVER
-      </p>
-      <h2>
-       Built for your next move.
-      </h2>
-      <p class="muted" id="resultText">
-       8 products available
-      </p>
-     </div>
-     <div class="toolbar">
-      <button class="secondary" id="filterToggle">
-       ☷ Filters
-      </button>
-      <select id="sort">
-       <option value="featured">
-        Featured
-       </option>
-       <option value="rating">
-        Top rated
-       </option>
-       <option value="low">
-        Price: low
-       </option>
-       <option value="high">
-        Price: high
-       </option>
-       <option value="new">
-        Newest
-       </option>
-      </select>
-     </div>
-    </div>
-    <div class="filters" id="filters">
-     <div>
-      <label>
-       Category
-      </label>
-      <div class="chips">
-       <button class="selected" data-cat="All">
-        All
-       </button>
-       <button data-cat="Design">
-        Design
-       </button>
-       <button data-cat="Development">
-        Development
-       </button>
-       <button data-cat="Productivity">
-        Productivity
-       </button>
-       <button data-cat="3D">
-        3D
-       </button>
-      </div>
-     </div>
-     <div>
-      <label>
-       Price
-      </label>
-      <div class="chips">
-       <button class="selected" data-price="all">
-        Any
-       </button>
-       <button data-price="free">
-        Free
-       </button>
-       <button data-price="10">
-        Under $10
-       </button>
-       <button data-price="20">
-        Under $20
-       </button>
-      </div>
-     </div>
-     <div>
-      <label>
-       Format
-      </label>
-      <div class="chips">
-       <button class="selected" data-format="all">
-        Any
-       </button>
-       <button data-format="Figma">
-        Figma
-       </button>
-       <button data-format="Notion">
-        Notion
-       </button>
-       <button data-format="Code">
-        Code
-       </button>
-       <button data-format="Blender">
-        Blender
-       </button>
-      </div>
-     </div>
-    </div>
-    <div class="grid" id="grid">
-    </div>
-    <div class="empty" hidden="" id="empty">
-     <h3>
-      Nothing matches yet.
-     </h3>
-     <p>
-      Try a broader search or loosen the filters.
-     </p>
-     <button class="secondary" id="reset">
-      Reset filters
-     </button>
-    </div>
-   </section>
-   <section class="section band" id="categories">
-    <div class="head">
-     <div>
-      <p class="eyebrow">
-       CATEGORIES
-      </p>
-      <h2>
-       Explore by workflow.
-      </h2>
-     </div>
-    </div>
-    <div class="cat-grid">
-     <button data-category="Design">
-      <span>
-       ◫
-      </span>
-      <b>
-       Design
-      </b>
-      <small>
-       UI kits, fonts, graphics
-      </small>
-     </button>
-     <button data-category="Development">
-      <span>
-       { }
-      </span>
-      <b>
-       Development
-      </b>
-      <small>
-       Code, APIs, plugins
-      </small>
-     </button>
-     <button data-category="Productivity">
-      <span>
-       ⌗
-      </span>
-      <b>
-       Productivity
-      </b>
-      <small>
-       Notion, templates, systems
-      </small>
-     </button>
-     <button data-category="3D">
-      <span>
-       ◇
-      </span>
-      <b>
-       3D &amp; Motion
-      </b>
-      <small>
-       Models, scenes, assets
-      </small>
-     </button>
-    </div>
-   </section>
-   <section class="section" id="sell">
-    <div class="sell">
-     <div>
-      <p class="eyebrow">
-       FOR CREATORS
-      </p>
-      <h2>
-       Have something useful to share?
-      </h2>
-      <p class="muted">
-       Publish products, manage listings, and grow your creator reputation.
-      </p>
-     </div>
-     <a class="primary" href="login.html?mode=creator">
-      Start selling &rarr;
-     </a>
-    </div>
-   </section>
+    <section class="market-hero">
+      <div class="market-hero-copy"><span class="market-kicker"><i></i> DIGITAL GOODS MARKETPLACE</span><h1>Semua karya digital,<br><em>satu tempat.</em></h1><p>Jelajahi aplikasi, e-book, game, film, dan aset digital dari para kreator.</p><a href="#catalog" class="market-hero-cta">Jelajahi etalase <span>↗</span></a></div>
+      <div class="market-hero-art" aria-hidden="true"><div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div><div class="hero-tile tile-main"><span>G</span><b>Digital<br>discovery</b></div><div class="hero-tile tile-small tile-top">✦<small>CREATE</small></div><div class="hero-tile tile-small tile-bottom">↗<small>EXPLORE</small></div><div class="hero-spark spark-one">✳</div><div class="hero-spark spark-two">✦</div></div>
+    </section>
+    <section class="market-category-section" id="categories"><div class="market-section-heading"><div><span class="market-kicker">PILIHANMU</span><h2>Jelajahi kategori</h2></div><span class="market-heading-note">Temukan sesuai kebutuhan</span></div><div class="market-category-list" id="categoryList"><button class="category-pill active" data-category="all">Semua kategori</button></div></section>
+    <section class="market-catalog" id="catalog">
+      <div class="market-section-heading catalog-heading"><div><span class="market-kicker">ETALASE GICOMM</span><h2>Produk digital</h2><p id="resultText">Memuat katalog...</p></div><div class="catalog-controls"><label class="sr-only" for="sort">Urutkan produk</label><select id="sort"><option value="newest">Terbaru</option><option value="title">Nama A–Z</option><option value="price-low">Harga terendah</option><option value="price-high">Harga tertinggi</option></select></div></div>
+      <div class="market-product-grid" id="productGrid" aria-live="polite"></div>
+      <div class="market-empty" id="emptyState" hidden><div class="empty-illustration" aria-hidden="true"><span>G</span><i>✦</i></div><span class="market-kicker">ETALASE BARU</span><h3>Ruang untuk karya digital berikutnya.</h3><p>Belum ada produk yang dipublikasikan. Produk yang lolos kurasi akan muncul di sini.</p><a href="login.html?mode=creator">Ingin menjadi kreator? Mulai di sini <span>↗</span></a></div>
+      <div class="market-empty market-search-empty" id="searchEmpty" hidden><h3>Belum ada hasil yang cocok.</h3><p>Coba kata kunci atau kategori lain.</p><button id="clearSearch" type="button">Hapus pencarian</button></div>
+    </section>
+    <section class="market-creator" id="creator"><div><span class="market-kicker">UNTUK KREATOR</span><h2>Punya karya digital untuk dibagikan?</h2><p>Bangun etalase, kelola produk, dan kembangkan audiensmu di Gicomm.</p></div><a href="login.html?mode=creator">Mulai berjualan <span>↗</span></a></section>
   </main>
-  <footer class="footer">
-   <span>
-    &copy; 2026 Gicomm
-   </span>
-   <a href="#">
-    About
-   </a>
-   <a href="#">
-    Terms
-   </a>
-   <a href="#">
-    Support
-   </a>
-  </footer>
-  <div class="toast" id="toast">
-  </div>
-  <div class="backdrop" id="backdrop">
-  </div>
-  <aside class="drawer" id="drawer">
-   <div class="drawer-head">
-    <div>
-     <p class="eyebrow">
-      YOUR CART
-     </p>
-     <h3>
-      Bag
-     </h3>
-    </div>
-    <button type="button" class="close" id="closeCart" aria-label="Close cart">
-     &times;
-    </button>
-   </div>
-   <div class="cart-items" id="cartItems">
-   </div>
-   <div class="cart-foot">
-    <div>
-     <span>
-      Total
-     </span>
-     <strong id="total">
-      $0
-     </strong>
-    </div>
-    <button class="primary wide" id="checkout">
-     Continue to checkout
-    </button>
-   </div>
-  </aside>
-  <div class="modal-wrap" id="modalWrap">
-   <div class="modal" id="modal">
-   </div>
-  </div>
-  <script src="js/pages/marketplace.js" type="module">
-  </script>
- </body>
+  <footer class="market-footer"><a class="market-brand" href="index.html"><span class="market-brand-mark">G</span><span>gicomm</span></a><span>© 2026 Gicomm. Marketplace produk digital.</span><div><a href="#categories">Kategori</a><a href="#creator">Untuk kreator</a><a href="login.html">Akun</a></div></footer>
+  <div class="market-toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="market-modal-wrap" id="productModal" hidden><div class="market-modal-backdrop" data-close-modal></div><section class="market-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="market-modal-close" type="button" data-close-modal aria-label="Tutup">×</button><div class="market-modal-image" id="modalImage"></div><div class="market-modal-content"><span class="market-kicker" id="modalCategory"></span><h2 id="modalTitle"></h2><p id="modalDescription"></p><strong id="modalPrice"></strong><span id="modalSeller"></span><button id="modalSave" type="button">Simpan ke wishlist</button></div></section></div>
+  <script type="module" src="js/pages/marketplace.js"></script>
+</body>
 </html>
