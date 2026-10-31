@@ -67,16 +67,22 @@ Gicomm_Marketplace_Final/
 │   └── style.css           # Main stylesheet (Times New Roman + Helvetica)
 ├── js/
 │   ├── components/
-│   │   ├── storage.js      # localStorage helpers (ready for Supabase)
+│   │   ├── storage.js      # Local UI preferences and demo cart helpers
 │   │   └── ui.js           # Shared UI (theme, toast notifications)
 │   ├── data/
-│   │   └── products.js     # Demo product data
+│   │   └── products.js     # Demo catalog (not yet database-backed)
+│   ├── lib/
+│   │   ├── supabase.js     # Pinned Supabase browser client
+│   │   └── auth.js         # Session, profile, and auth guards
 │   └── pages/
-│       ├── auth.js         # Login/Signup logic
-│       ├── marketplace.js  # Search, filters, cart management
-│       └── dashboard.js    # Dashboard tabs and theme
+│       ├── auth.js         # Supabase email authentication
+│       ├── marketplace.js  # Search, filters, demo cart
+│       └── dashboard.js    # Authenticated account dashboard
 ├── config/
-│   └── supabase.example.js # Supabase setup guide
+│   ├── supabase.js         # Public project URL and publishable key
+│   └── supabase.example.js # Safe configuration template
+├── docs/
+│   └── backend-implementation.md # Backend architecture and phased plan
 ├── README.md               # Project documentation
 └── vercel.json            # Vercel deployment config
 ```
@@ -278,12 +284,13 @@ git push
 
 ### Known Limitations (Demo)
 
-- Authentication is demo-only (localStorage based)
-- Product data is static (file-based, not database)
-- No file upload functionality
-- No payment processing
-- No email notifications system
-- No real-time user-to-user messaging
+- Email/password authentication is connected to Supabase Auth; live browser verification is still pending
+- Marketplace catalog and cart are still demo/frontend data
+- Wishlist UI is not yet connected to the existing saved_products table
+- Product upload and private download flows are not yet wired to Supabase Storage
+- Seller product workflows and admin moderation UI are not yet connected
+- Orders, checkout, and payment processing are intentionally not implemented
+- Google/GitHub OAuth providers are not enabled in the UI until provider configuration is verified
 
 ---
 
@@ -302,14 +309,17 @@ git push
 ## 📚 Technology Stack
 
 ### Frontend (Current)
-- **HTML5** - Semantic markup
-- **CSS3** - Variables, Grid, Flexbox, Media Queries
-- **Vanilla JavaScript** - ES6 Modules, no frameworks
-- **Fonts** - Times New Roman, Helvetica (system fonts)
+- **HTML5 / CSS3** - Static pages and responsive UI
+- **Vanilla JavaScript** - Native ES Modules; no framework or build step
+- **Supabase JS 2.118.0** - Version-pinned browser SDK loaded as an ES module
+- **Supabase Auth** - Email/password registration, sign-in, and password recovery
+- **PostgreSQL + RLS** - Database and row-level access controls
+- **Supabase Storage** - Private asset/file buckets are provisioned; frontend integration is pending
 
-### Future Backend
-- **Supabase** - Open-source Firebase alternative
-- **PostgreSQL** - Reliable data persistence
+### Hybrid Backend
+- **Supabase Data API** - Direct client data access only where RLS and grants allow it
+- **Supabase Edge Functions** - Reserved for trusted business logic; none are deployed yet
+- **Server-side secrets** - Must never be included in browser codereSQL** - Reliable data persistence
 - **Authentication** - Multiple provider support
 - **Storage** - File hosting and CDN
 
@@ -342,43 +352,43 @@ Currently supported product types:
 - [x] Search & filtering
 - [x] Responsive design
 
-### Phase 2: Backend Integration 🔄
-- [ ] Supabase setup
-- [ ] Real user authentication
-- [ ] Database integration
-- [ ] Payment processing (Stripe/Paddle)
-- [ ] Email notifications
+### Phase 2: Hybrid Backend Integration 🔄
+- [x] Supabase project and database foundation (migrations 001–007)
+- [x] Supabase browser client and email/password Auth implementation
+- [x] Authenticated dashboard guard and real account identity
+- [ ] Verify sign-up, confirmation, sign-in, recovery, and sign-out in a live browser
+- [ ] Connect public product catalog and taxonomy to PostgreSQL
+- [ ] Connect persistent wishlist to saved_products
 
-### Phase 3: Creator Tools
-- [ ] Product upload interface
-- [ ] Sales analytics
-- [ ] Promotional tools
-- [ ] Creator support system
+### Phase 3: Seller and Asset Workflows
+- [ ] Seller product CRUD and moderation submission
+- [ ] Product revision review workflow
+- [ ] Private Storage upload and signed download flows
+- [ ] File-content validation and malware-scanning strategy
 
-### Phase 4: Advanced Features
-- [ ] AI-powered discovery
-- [ ] Direct messaging
-- [ ] Community features
-- [ ] Natural language search
+### Phase 4: Marketplace Business Logic
+- [ ] Persistent cart design and validation
+- [ ] Order lifecycle and entitlement records
+- [ ] Admin operations and audit trail
+- [ ] Payment gateway remains deferred until order flows are verified
+
+### Phase 5: Production Hardening
+- [ ] End-to-end authorization and RLS tests
+- [ ] Rate limiting, abuse controls, and observability
+- [ ] Performance and failure-recovery tests
+- [ ] Deployment and rollback verification
 
 ---
 
 ## 🔒 Security
 
-### Current Implementation (Demo)
-- No sensitive data on server
-- All data in browser localStorage only
-- No authentication enforcement
-- Demo mode with sample data
-
-### After Supabase Integration
-- Secure user authentication
-- Row-level security policies
-- Encrypted file storage
-- HTTPS/TLS encryption
-- CORS configuration
-- Rate limiting and abuse prevention
-- Regular security audits
+### Current Implementation
+- Browser uses only the Supabase publishable key; no service-role or secret key is shipped
+- Authenticated dashboard verifies the user through Supabase Auth
+- Profile reads are constrained by database RLS
+- Product catalog, cart, seller operations, and order data are not yet database-backed
+- Supabase Edge Functions are not deployed yet
+- Database Security Advisor currently reports no lints; this is not a substitute for end-to-end application testing
 
 ---
 
