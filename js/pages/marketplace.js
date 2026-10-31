@@ -105,7 +105,7 @@ function visibleProducts() {
 function renderProducts() {
   const items = visibleProducts();
   el("resultText").textContent = state.products.length ? items.length + " produk tersedia" : "Etalase sedang disiapkan";
-  el("emptyState").hidden = state.products.length > 0 || Boolean(state.query) || state.category !== "all";
+  el("emptyState").hidden = state.products.length > 0 || state.category !== "all";
   el("searchEmpty").hidden = !(state.products.length > 0 && items.length === 0);
 
   if (!state.products.length) {
