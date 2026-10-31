@@ -61,8 +61,8 @@ npx http-server
 ```
 Gicomm_Marketplace_Final/
 ├── index.html              # Marketplace homepage with product grid
-├── login.html              # Authentication (demo mode)
-├── dashboard.html          # User dashboard with 6 dynamic tabs
+├── login.html              # Supabase email authentication
+├── dashboard.html          # Authenticated account dashboard
 ├── css/
 │   └── style.css           # Main stylesheet (Times New Roman + Helvetica)
 ├── js/
