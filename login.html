@@ -31,14 +31,23 @@
     <p class="muted">
      Access your library, saved products, and dashboard.
     </p>
+    <p id="authMessage" class="muted" role="status" aria-live="polite" hidden=""></p>
     <form id="loginForm">
-     <label>
-      Email
-      <input id="email" placeholder="you@example.com" required="" type="email"/>
+     <label id="displayNameField" hidden="">
+      Display name
+      <input id="displayName" autocomplete="name" maxlength="80" placeholder="Your name" type="text"/>
      </label>
-     <label>
-      Password
-      <input placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required="" type="password"/>
+     <label id="emailField">
+      Email
+      <input id="email" autocomplete="email" placeholder="you@example.com" required="" type="email"/>
+     </label>
+     <label id="passwordField">
+      <span id="passwordLabel">Password</span>
+      <input id="password" autocomplete="current-password" placeholder="••••••••" required="" type="password"/>
+     </label>
+     <label id="confirmPasswordField" hidden="">
+      Confirm password
+      <input id="confirmPassword" autocomplete="new-password" placeholder="••••••••" type="password"/>
      </label>
      <div class="auth-row">
       <span>
@@ -55,23 +64,18 @@
     <div class="or">
      or
     </div>
-    <div class="social">
-     <button class="secondary">
-      Continue with Google
-     </button>
-     <button class="secondary">
-      Continue with GitHub
-     </button>
-    </div>
+    <p class="auth-note">
+     Google and GitHub sign-in will be enabled after their providers are configured.
+    </p>
     <p class="auth-bottom">
      Need an account?
      <a href="#" id="signup">
-      Create demo account
+      Create account
      </a>
     </p>
    </div>
    <p class="auth-note">
-    Demo frontend &mdash; no credentials are sent anywhere.
+    Secure account access powered by Supabase Auth.
    </p>
   </div>
   <script src="js/pages/auth.js" type="module">
