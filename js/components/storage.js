@@ -135,11 +135,3 @@ function writeJSON(key, value) {
  *     return data || [];
  * }
  */
-
-export function setDemoUser(email) {
-    localStorage.setItem(KEYS.demoUser, email);
-}
-
-export function clearDemoUser() {
-    localStorage.removeItem(KEYS.demoUser);
-}
