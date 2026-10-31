@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f8fc">
+  <meta name="description" content="Kelola produk digital dan pengajuan moderasi di Gicomm Seller Workspace.">
+  <title>Ruang Kreator — Gicomm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/gicomm-design-system.css" rel="stylesheet">
+</head>
+<body class="seller-page">
+  <header class="seller-header">
+    <a class="brand" href="index.html"><span class="brand-mark">G</span><span>gicomm</span></a>
+    <nav aria-label="Navigasi utama">
+      <a href="index.html">Marketplace</a>
+      <a href="dashboard.html">Dashboard akun</a>
+    </nav>
+    <div class="seller-user">
+      <span id="sellerAvatar" class="avatar">G</span>
+      <span id="sellerName">Kreator</span>
+      <button id="sellerLogout" class="secondary" type="button">Keluar</button>
+    </div>
+  </header>
+  <main class="seller-main">
+    <section class="seller-hero">
+      <div>
+        <span class="seller-kicker">GICOMM / CREATOR SPACE</span>
+        <h1>Ruang untuk<br><em>karya digitalmu.</em></h1>
+        <p>Kelola draft, kirim produk untuk ditinjau, dan pantau keputusan moderasi dari satu tempat.</p>
+      </div>
+      <div class="seller-hero-mark" aria-hidden="true"><span>G</span><i>CREATOR</i></div>
+    </section>
+
+    <section class="seller-metrics" aria-label="Ringkasan produk">
+      <article><small>SEMUA PRODUK</small><strong id="sellerTotal">—</strong><span>Produk milikmu</span></article>
+      <article><small>DRAFT</small><strong id="sellerDrafts">—</strong><span>Siap disunting</span></article>
+      <article><small>MENUNGGU REVIEW</small><strong id="sellerPending">—</strong><span>Dalam moderasi</span></article>
+      <article><small>DITERBITKAN</small><strong id="sellerPublished">—</strong><span>Tampil di marketplace</span></article>
+    </section>
+
+    <section class="seller-toolbar">
+      <div><span class="seller-kicker">PRODUCT MANAGEMENT</span><h2>Produk saya</h2><p>Mulai dari draft. Produk baru hanya tampil setelah disetujui Admin.</p></div>
+      <button id="newSellerProduct" class="seller-primary" type="button">＋ Buat produk</button>
+    </section>
+
+    <section id="sellerProductForm" class="seller-panel seller-form-panel" hidden>
+      <div class="seller-panel-heading"><div><span class="seller-kicker">PRODUCT EDITOR</span><h3 id="sellerFormTitle">Produk baru</h3><p>Isi detail yang jelas agar proses peninjauan lebih mudah.</p></div><button id="closeSellerForm" class="seller-close" type="button" aria-label="Tutup formulir">×</button></div>
+      <form id="sellerProductEditor" class="seller-form">
+        <input id="sellerProductId" type="hidden">
+        <label>Nama produk
+          <input id="sellerTitle" type="text" minlength="3" maxlength="160" required placeholder="Contoh: Paket Template Presentasi">
+        </label>
+        <label>Slug produk
+          <input id="sellerSlug" type="text" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="paket-template-presentasi">
+          <small>Gunakan huruf kecil, angka, dan tanda hubung.</small>
+        </label>
+        <label>Jenis produk
+          <select id="sellerType" required></select>
+        </label>
+        <label>Kategori
+          <select id="sellerCategory" required></select>
+        </label>
+        <label class="seller-full">Deskripsi
+          <textarea id="sellerDescription" rows="5" maxlength="10000" placeholder="Jelaskan isi, manfaat, dan format produk digitalmu."></textarea>
+        </label>
+        <label>Harga (IDR)
+          <input id="sellerPrice" type="number" min="0" step="1000" value="0" required>
+        </label>
+        <label>Sampul produk (opsional)
+          <input id="sellerCover" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
+          <small>JPG, PNG, WebP, atau AVIF. Maksimal 10 MB.</small>
+        </label>
+        <div class="seller-upload-notice seller-full"><strong>Berkas digital belum dibuka.</strong> Upload file produk akan diaktifkan setelah validasi signature dan pemindaian malware tersedia. Ini mencegah berkas yang belum diperiksa masuk ke alur distribusi.</div>
+        <div class="seller-form-actions seller-full">
+          <button id="cancelSellerForm" class="seller-secondary" type="button">Batal</button>
+          <button id="saveSellerProduct" class="seller-primary" type="submit">Simpan sebagai draft</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="seller-list-section">
+      <div class="seller-list-heading">
+        <div><h3>Daftar produk</h3><p id="sellerListHint">Produk dan statusnya akan muncul di sini.</p></div>
+        <label class="seller-search"><span>⌕</span><input id="sellerSearch" type="search" placeholder="Cari produk..." aria-label="Cari produk"></label>
+      </div>
+      <div id="sellerProductGrid" class="seller-product-grid">
+        <div class="seller-loading">Memuat ruang kreator...</div>
+      </div>
+    </section>
+
+    <section id="sellerRevisionForm" class="seller-panel seller-form-panel" hidden>
+      <div class="seller-panel-heading"><div><span class="seller-kicker">PUBLISHED PRODUCT</span><h3>Ajukan perubahan</h3><p>Produk yang sudah diterbitkan tidak diedit langsung. Perubahan akan masuk antrean moderasi.</p></div><button id="closeRevisionForm" class="seller-close" type="button" aria-label="Tutup formulir">×</button></div>
+      <form id="sellerRevisionEditor" class="seller-form">
+        <input id="revisionProductId" type="hidden">
+        <label>Nama produk<input id="revisionTitle" type="text" minlength="3" maxlength="160" required></label>
+        <label>Slug<input id="revisionSlug" type="text" pattern="[a-z0-9]+(-[a-z0-9]+)*" required></label>
+        <label>Jenis produk<select id="revisionType" required></select></label>
+        <label>Kategori<select id="revisionCategory" required></select></label>
+        <label class="seller-full">Deskripsi<textarea id="revisionDescription" rows="5" maxlength="10000"></textarea></label>
+        <label>Harga (IDR)<input id="revisionPrice" type="number" min="0" step="1000" required></label>
+        <label class="seller-full">Catatan untuk Admin<textarea id="revisionNote" rows="3" maxlength="1000" placeholder="Jelaskan perubahan yang diajukan."></textarea></label>
+        <div class="seller-form-actions seller-full"><button id="cancelRevisionForm" class="seller-secondary" type="button">Batal</button><button id="submitRevision" class="seller-primary" type="submit">Kirim perubahan</button></div>
+      </form>
+    </section>
+
+    <section class="seller-history-section">
+      <div class="seller-list-heading"><div><h3>Riwayat moderasi</h3><p>Catatan pengajuan perubahan untuk produk yang telah diterbitkan.</p></div></div>
+      <div id="sellerRevisionList" class="seller-revision-list"><div class="seller-loading">Memuat riwayat...</div></div>
+    </section>
+    <p id="sellerToast" class="seller-toast" role="status" aria-live="polite"></p>
+  </main>
+  <footer class="seller-footer"><span>© 2026 Gicomm</span><span>Discover. Trade. Grow.</span><a href="dashboard.html">Kembali ke dashboard ↗</a></footer>
+  <script type="module" src="js/pages/seller.js"></script>
+</body>
+</html>

@@ -56,6 +56,7 @@ document.querySelectorAll("[data-tab]").forEach((button) => {
   button.addEventListener("click", () => {
     document.querySelectorAll("[data-tab]").forEach((item) => item.classList.remove("active"));
     button.classList.add("active");
+    if (button.dataset.tab === "Selling") { window.location.assign("seller.html"); return; }
     const tabData = sections[button.dataset.tab];
     if (!tabData) return;
     tabTitle.textContent = tabData.title;
