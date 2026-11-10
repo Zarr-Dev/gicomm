@@ -36,7 +36,7 @@ function setMode(nextMode) {
   document.querySelector(".auth-card h1").textContent =
     isSignup ? "Join Gicomm." : isRecovery ? "Set a new password." :
     isResetRequest ? "Reset your password." : "Sign in to Gicomm.";
-  document.querySelector(".auth-card > .muted").textContent =
+  document.querySelector(".auth-heading > .muted").textContent =
     isSignup ? "Create an account to discover and manage digital products." :
     isRecovery ? "Choose a new password for your Gicomm account." :
     isResetRequest ? "Enter your account email and we will send a recovery link." :
