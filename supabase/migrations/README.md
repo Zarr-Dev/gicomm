@@ -16,10 +16,11 @@ The SQL files below were recovered from the live project's `supabase_migrations.
 | `20261031081549` | `005_existing_public_table_acl_hardening` | Existing application table ACL hardening |
 | `20261031084658` | `006_wishlist_and_product_revision_workflow` | Persistent wishlist and moderated product revisions |
 | `20261031094156` | `007_product_revision_foreign_key_indexes` | Covering indexes for revision foreign keys |
+| `20261110115231` | `008_single_admin_role_enforcement` | Private Auth trigger enforcing one primary Admin account |
 
 ## Integrity rules
 
-1. Treat migrations `001` through `007` as immutable historical records. Do not rewrite an applied migration to change schema behavior.
+1. Treat migrations `001` through `008` as immutable historical records. Do not rewrite an applied migration to change schema behavior.
 2. Add future schema changes as a new, timestamped migration after inspecting the live migration history.
 3. Do not manually insert rows into `supabase_migrations.schema_migrations`.
 4. Do not replay this history against the existing production project. Its migrations are already applied there.
