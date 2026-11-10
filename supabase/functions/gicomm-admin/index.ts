@@ -76,8 +76,13 @@ export default {
       if (targetError || !targetResult.user) return json({ error: "Target account not found." }, 404);
       const target = targetResult.user;
 
-      if (body.role === "admin" && !target.email_confirmed_at) {
-        return json({ error: "The account must confirm its email before receiving Admin access." }, 409);
+      // The primary Admin is provisioned out-of-band during initial setup.
+      // Existing duplicate Admin records may be demoted, but the application
+      // never promotes a second account to Admin.
+      if (body.role === "admin" && target.app_metadata?.role !== "admin") {
+        return json({
+          error: "Gicomm already reserves Admin access for its single primary administrator.",
+        }, 409);
       }
 
       if (body.role === "member" && target.app_metadata?.role === "admin") {
