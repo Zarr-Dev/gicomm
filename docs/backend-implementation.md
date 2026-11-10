@@ -102,7 +102,7 @@ No new schema migration should be added unless a concrete missing requirement is
 
 ## Immutable migration rule
 
-Migrations 001–007 are historical applied migrations. Never edit, rename, delete, or replay them on the existing project. Future schema changes must use a new timestamped migration after inspecting live schema, grants, RLS policies, and migration history.
+Migrations 001–008 are historical applied migrations. Never edit, rename, delete, or replay them on the existing project. Future schema changes must use a new timestamped migration after inspecting live schema, grants, RLS policies, and migration history.
 
 
 ## Phase 7 — Marketplace-first storefront and Admin Control Center
@@ -131,6 +131,6 @@ The project has no automatically assigned first Admin. After the intended accoun
 - First Admin provisioning and admin-only route denial.
 - Product create/edit/publish/archive and image/file uploads with RLS and Storage.
 - Category/type/mapping CRUD and revision approval/rejection.
-- Admin Edge Function user list, role promotion/demotion, self-change denial, and last-Admin protection.
+- Admin Edge Function user list, refusal of second Admin promotion, self-change denial, and last-Admin protection.
 - Confirm Supabase Auth Site URL/Redirect URLs for preview and production origins.
 - Production file-signature validation and malware scanning before seller uploads are enabled.
