@@ -1974,3 +1974,150 @@ body.dark.account-dashboard .dash-nav { background:var(--surface); }
   .account-dashboard .actions>a { font-size:10px; }
   .account-dashboard .dash-nav button { padding:9px; }
 }
+
+
+/* =========================================================
+   GICOMM DISCOVERY + CROSS-PAGE CONSISTENCY
+   ========================================================= */
+.market-search-clear {
+  width:32px;
+  min-width:32px;
+  height:32px;
+  padding:0!important;
+  display:grid;
+  place-items:center;
+  border:0!important;
+  border-radius:8px!important;
+  background:transparent!important;
+  color:var(--market-muted)!important;
+  font:600 20px/1 "DM Sans",sans-serif!important;
+}
+.market-search-clear:hover { background:var(--market-soft)!important;color:var(--market-text)!important; }
+.market-search-clear[hidden] { display:none!important; }
+.market-nav a:focus-visible,.product-header-links a:focus-visible,
+.dashboard-top-links a:focus-visible,.admin-sidebar a:focus-visible {
+  outline-offset:4px;
+}
+.market-search input { font-size:13px; }
+.market-section-heading p[role="status"] { min-height:16px; }
+.market-search-empty { text-align:center; }
+.market-search-empty button {
+  margin-top:8px;padding:10px 15px;border:1px solid var(--market-line);
+  border-radius:9px;background:var(--market-card);color:var(--market-purple);
+  font-size:10px;font-weight:800;
+}
+.market-search-empty button:hover { border-color:var(--market-purple);background:var(--market-soft); }
+.product-header-search {
+  display:flex;align-items:center;gap:6px;flex:1;max-width:370px;min-width:145px;
+  padding:4px 5px 4px 12px;border:1px solid var(--market-line);
+  border-radius:11px;background:var(--market-card);
+}
+.product-header-search input {
+  width:100%;min-width:0;border:0;outline:0;background:transparent;
+  color:var(--market-text);font:500 12px "DM Sans",sans-serif;
+}
+.product-header-search button {
+  width:34px;height:33px;border:0;border-radius:8px;
+  background:var(--market-soft);color:var(--market-purple);
+  font-size:18px;font-weight:800;
+}
+.product-header-search:focus-within {
+  border-color:var(--market-purple);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--market-purple) 11%,transparent);
+}
+.product-header-links { flex-wrap:wrap; }
+.product-detail-page .market-header { gap:20px; }
+.account-dashboard .dashboard-top-links {
+  display:flex;align-items:center;gap:14px;
+}
+.account-dashboard .dashboard-top-links a {
+  color:var(--muted);font-size:11px;font-weight:700;
+}
+.account-dashboard .dashboard-top-links a:hover { color:var(--accent); }
+.account-dashboard .profile-role-line {
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin-top:18px;padding-top:14px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:10px;
+}
+.account-dashboard .profile-role-line strong {
+  color:var(--accent);font-size:10px;font-weight:800;
+}
+.account-dashboard .profile-note { margin:14px 0 0; }
+.account-dashboard .dashboard-discovery-panel { margin-top:14px; }
+.account-dashboard .dashboard-discovery-panel .panel-head { align-items:center; }
+.account-dashboard .dashboard-footer { margin-top:24px; }
+.account-dashboard .dash-nav button[aria-current="page"] {
+  color:var(--accent);background:var(--band);
+}
+.account-dashboard .activities>div { min-width:0; }
+.admin-nav-search {
+  display:flex;align-items:center;gap:8px;margin:12px 0 14px;padding:0 10px;
+  min-height:39px;border:1px solid var(--admin-line);border-radius:9px;
+  background:var(--admin-card);color:var(--admin-muted);
+}
+.admin-nav-search span { font-size:19px; }
+.admin-nav-search input {
+  width:100%;min-width:0;border:0;outline:0;background:transparent;
+  color:var(--admin-text);font:500 10px "DM Sans",sans-serif;
+}
+.admin-nav-search:focus-within {
+  border-color:var(--admin-purple);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--admin-purple) 12%,transparent);
+}
+.admin-nav-empty { color:var(--admin-muted);font-size:9px;padding:5px 7px; }
+.admin-filter-controls {
+  display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;
+}
+.admin-filter-controls input,.admin-filter-controls select {
+  min-width:150px;max-width:100%;border:1px solid var(--admin-line);
+  border-radius:8px;padding:10px;background:var(--admin-bg);
+  color:var(--admin-text);font:500 10px "DM Sans",sans-serif;
+}
+.admin-filter-controls input:focus,.admin-filter-controls select:focus {
+  outline:0;border-color:var(--admin-purple);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--admin-purple) 12%,transparent);
+}
+.admin-filter-caption { display:block;margin-top:4px;color:var(--admin-muted);font-size:8px; }
+.admin-table-heading input { flex:0 1 230px; }
+.admin-nav-item[hidden] { display:none!important; }
+.admin-sidebar .admin-nav-item { width:100%; }
+.admin-section-toolbar .admin-filter-controls { justify-content:flex-end; }
+.admin-filter-controls .admin-secondary { white-space:nowrap; }
+.admin-table td { overflow-wrap:anywhere; }
+.market-footer a:hover,.product-header-links a:hover { color:var(--market-purple); }
+@media(max-width:1080px) {
+  .product-detail-page .market-header { padding-inline:22px;gap:12px; }
+  .product-header-search { max-width:300px; }
+}
+@media(max-width:760px) {
+  .product-detail-page .market-header {
+    display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;
+    padding:12px 16px;
+  }
+  .product-header-search { order:3;flex-basis:100%;max-width:none;height:42px; }
+  .product-header-search input { font-size:16px; }
+  .product-header-links { margin-left:auto;font-size:10px; }
+  .account-dashboard .dashboard-top-links { gap:8px; }
+  .account-dashboard .dashboard-top-links a { font-size:10px; }
+  .account-dashboard .dashboard-top-links .round { flex:0 0 36px; }
+  .admin-nav-search { margin:8px 0 11px; }
+  .admin-section-toolbar { align-items:flex-start;flex-wrap:wrap; }
+  .admin-section-toolbar .admin-filter-controls { width:100%;justify-content:flex-start; }
+  .admin-filter-controls input { flex:1 1 180px; }
+  .admin-table-heading { align-items:flex-start;flex-wrap:wrap; }
+  .admin-table-heading .admin-filter-controls { width:100%; }
+}
+@media(max-width:520px) {
+  .product-header-search { flex-basis:100%; }
+  .product-header-links { width:100%;justify-content:space-between; }
+  .account-dashboard .dashboard-top-links a:first-child { display:none; }
+  .account-dashboard .dash-title .primary { width:100%; }
+  .admin-filter-controls { width:100%; }
+  .admin-filter-controls input,.admin-filter-controls select { min-width:0;flex:1 1 100%;width:100%; }
+  .admin-table-heading input { flex:1 1 100%;max-width:none; }
+  .admin-quick-actions { grid-template-columns:1fr; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .market-search-clear,.product-header-search,.admin-nav-search,.admin-filter-controls input,
+  .admin-filter-controls select { transition:none!important; }
+}
