@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f7fb">
+  <title>Gicomm Admin Control Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="admin-shell">
+  <header class="admin-topbar">
+    <a class="market-brand" href="index.html"><span class="market-brand-mark">G</span><span>gicomm</span></a>
+    <div class="admin-topbar-center"><span class="admin-live-dot"></span> ADMIN CONTROL CENTER</div>
+    <div class="admin-topbar-user"><span id="adminEmail">Admin</span><button id="adminLogout" type="button">Keluar</button></div>
+  </header>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-side-label">WORKSPACE</div>
+      <button class="admin-nav-item active" data-panel="overview"><span>◫</span> Ringkasan</button>
+      <button class="admin-nav-item" data-panel="products"><span>▦</span> Produk</button>
+      <button class="admin-nav-item" data-panel="categories"><span>◇</span> Kategori</button>
+      <button class="admin-nav-item" data-panel="types"><span>▤</span> Jenis produk</button>
+      <button class="admin-nav-item" data-panel="reviews"><span>✓</span> Moderasi revisi</button>
+      <button class="admin-nav-item" data-panel="users"><span>◎</span> Pengguna & Admin</button>
+      <div class="admin-sidebar-bottom"><a href="index.html">← Kembali ke marketplace</a><small>Gicomm Admin · Secure workspace</small></div>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-page-heading"><div><span class="market-kicker">GICOMM / ADMINISTRATION</span><h1 id="adminPageTitle">Ringkasan</h1><p id="adminPageSubtitle">Pantau katalog dan kelola operasional marketplace.</p></div><span class="admin-role-pill">ADMIN ACCESS</span></div>
+      <div id="adminNotice" class="admin-notice" role="status" aria-live="polite" hidden></div>
+
+      <section class="admin-panel active" id="panel-overview">
+        <div class="admin-stat-grid">
+          <article><span>SELURUH PRODUK</span><strong id="statProducts">—</strong><small>Draft, review, dan terbit</small></article>
+          <article><span>PRODUK TERBIT</span><strong id="statPublished">—</strong><small>Tampil di marketplace</small></article>
+          <article><span>MENUNGGU REVIEW</span><strong id="statPending">—</strong><small>Antrean moderasi</small></article>
+          <article><span>KATEGORI AKTIF</span><strong id="statCategories">—</strong><small>Pengelompokan katalog</small></article>
+        </div>
+        <div class="admin-overview-grid">
+          <article class="admin-card"><div class="admin-card-heading"><div><span class="market-kicker">QUICK ACTIONS</span><h2>Kelola Gicomm</h2></div></div><div class="admin-quick-actions"><button data-go="products">＋ Tambah produk</button><button data-go="categories">＋ Tambah kategori</button><button data-go="reviews">Periksa revisi produk</button><button data-go="users">Kelola role Admin</button></div></article>
+          <article class="admin-card"><span class="market-kicker">STATUS PLATFORM</span><h2>Fondasi backend aktif</h2><p>Autentikasi Supabase, PostgreSQL, Storage privat, dan kebijakan RLS menjadi fondasi pengelolaan marketplace.</p><div class="admin-platform-status"><span><i></i> Supabase Auth</span><span><i></i> PostgreSQL + RLS</span><span><i></i> Private Storage</span></div></article>
+        </div>
+      </section>
+
+      <section class="admin-panel" id="panel-products">
+        <div class="admin-section-toolbar"><div><h2>Manajemen produk</h2><p>Buat, edit, publikasikan, dan arsipkan produk digital.</p></div><button class="admin-primary" id="newProduct">＋ Produk baru</button></div>
+        <form id="productForm" class="admin-card admin-form" hidden>
+          <div class="admin-card-heading"><div><span class="market-kicker">PRODUCT EDITOR</span><h2 id="productFormTitle">Tambah produk</h2></div><button class="admin-quiet" type="button" id="cancelProduct">Tutup</button></div>
+          <input id="productId" type="hidden">
+          <div class="admin-form-grid">
+            <label>Nama produk<input id="productTitle" required minlength="3" maxlength="160" placeholder="Contoh: Paket ikon minimalis"></label>
+            <label>Slug<input id="productSlug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="paket-ikon-minimalis"></label>
+            <label>Jenis produk<select id="productType" required></select></label>
+            <label>Kategori<select id="productCategory" required></select></label>
+            <label>Harga (IDR)<input id="productPrice" type="number" min="0" step="1" value="0" required></label>
+            <label>Status<select id="productStatus"><option value="draft">Draft</option><option value="published">Terbitkan</option><option value="archived">Arsipkan</option></select></label>
+            <label class="admin-span-2">Deskripsi<textarea id="productDescription" rows="3" maxlength="10000" placeholder="Jelaskan isi, manfaat, dan format produk..."></textarea></label>
+            <label>Gambar sampul <small>JPG, PNG, WebP, AVIF · Maks. 10 MB</small><input id="productCover" type="file" accept="image/jpeg,image/png,image/webp,image/avif"></label>
+            <label>File digital utama <small>Format sesuai kebijakan Storage · Maks. 500 MB</small><input id="productFile" type="file" accept=".pdf,.epub,.zip,.7z,.mp4,.mp3,.apk,.exe"></label>
+          </div>
+          <div class="admin-form-actions"><button class="admin-primary" type="submit" id="saveProduct">Simpan produk</button><span id="productFormHint">Produk akan disimpan ke database Gicomm.</span></div>
+        </form>
+        <div class="admin-card"><div class="admin-table-heading"><h2>Daftar produk</h2><input id="productFilter" type="search" placeholder="Cari produk..."></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Produk</th><th>Kategori</th><th>Harga</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="productRows"><tr><td colspan="5">Memuat produk...</td></tr></tbody></table></div></div>
+      </section>
+
+      <section class="admin-panel" id="panel-categories">
+        <div class="admin-section-toolbar"><div><h2>Kategori</h2><p>Atur kategori yang tampil pada marketplace.</p></div></div>
+        <form id="categoryForm" class="admin-card admin-inline-form"><label>Nama kategori<input id="categoryName" required minlength="2" maxlength="80" placeholder="Nama kategori"></label><label>Deskripsi<input id="categoryDescription" maxlength="300" placeholder="Deskripsi singkat"></label><button class="admin-primary" type="submit">Tambah kategori</button></form>
+        <div class="admin-card"><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Nama</th><th>Slug</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="categoryRows"></tbody></table></div></div>
+      </section>
+
+      <section class="admin-panel" id="panel-types">
+        <div class="admin-section-toolbar"><div><h2>Jenis produk</h2><p>Kelola format utama produk digital dan hubungannya dengan kategori.</p></div></div>
+        <form id="typeForm" class="admin-card admin-inline-form"><label>Nama jenis<input id="typeName" required minlength="2" maxlength="80" placeholder="Contoh: Template"></label><label>Deskripsi<input id="typeDescription" maxlength="300" placeholder="Deskripsi singkat"></label><button class="admin-primary" type="submit">Tambah jenis</button></form>
+        <div class="admin-card"><div class="admin-card-heading"><div><span class="market-kicker">TAXONOMY</span><h2>Pemetaan jenis ↔ kategori</h2></div></div><form id="mappingForm" class="admin-inline-form"><label>Jenis produk<select id="mappingType"></select></label><label>Kategori<select id="mappingCategory"></select></label><button class="admin-primary" type="submit">Hubungkan</button></form><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Jenis</th><th>Kategori</th><th>Aksi</th></tr></thead><tbody id="mappingRows"></tbody></table></div></div>
+        <div class="admin-card"><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Jenis produk</th><th>Slug</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="typeRows"></tbody></table></div></div>
+      </section>
+
+      <section class="admin-panel" id="panel-reviews">
+        <div class="admin-section-toolbar"><div><h2>Moderasi revisi</h2><p>Periksa usulan perubahan produk dari kreator.</p></div><button class="admin-secondary" id="refreshReviews">Muat ulang</button></div>
+        <div class="admin-card"><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Produk / Usulan</th><th>Kreator</th><th>Perubahan</th><th>Catatan review</th><th>Keputusan</th></tr></thead><tbody id="reviewRows"></tbody></table></div></div>
+      </section>
+
+      <section class="admin-panel" id="panel-users">
+        <div class="admin-section-toolbar"><div><h2>Pengguna & Admin</h2><p>Atur akses Admin berdasarkan role tepercaya di Supabase Auth.</p></div><button class="admin-secondary" id="refreshUsers">Muat ulang</button></div>
+        <div class="admin-security-note"><strong>Kontrol keamanan:</strong> perubahan role hanya dilakukan melalui Edge Function server-side. Role tidak dapat diubah dari form profil atau user_metadata.</div>
+        <div class="admin-card"><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Akun</th><th>Terdaftar</th><th>Login terakhir</th><th>Role</th><th>Aksi</th></tr></thead><tbody id="userRows"><tr><td colspan="5">Memuat pengguna...</td></tr></tbody></table></div></div>
+      </section>
+    </main>
+  </div>
+  <div class="admin-toast" id="adminToast" role="status" aria-live="polite"></div>
+  <script type="module" src="js/pages/admin.js"></script>
+</body>
+</html>

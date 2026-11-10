@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f7fb">
+  <meta name="description" content="Detail produk digital di Gicomm.">
+  <title>Detail Produk — Gicomm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="product-detail-page">
+  <header class="market-header">
+    <a class="market-brand" href="index.html"><span class="market-brand-mark">G</span><span>gicomm</span></a>
+    <div class="product-header-links"><a href="index.html">Jelajahi produk</a><a id="productSignIn" href="login.html">Masuk</a><a id="productAccount" href="dashboard.html" hidden>Akun</a></div>
+  </header>
+  <main class="product-detail-wrap">
+    <nav class="product-breadcrumb" aria-label="Breadcrumb"><a href="index.html">Marketplace</a><span>›</span><span>Detail produk</span></nav>
+    <div id="productStatus" class="product-state" role="status" aria-live="polite">Memuat detail produk...</div>
+    <article id="productDetail" class="product-detail-layout" hidden>
+      <div class="product-detail-visual"><div id="productCover" class="product-detail-cover"><span>G</span></div><div class="product-safe-note"><span>✓</span> Produk digital terkurasi di Gicomm</div></div>
+      <section class="product-detail-info">
+        <div class="product-detail-tags"><span id="productType"></span><span id="productCategory"></span></div>
+        <h1 id="productTitle"></h1>
+        <p id="productSeller" class="product-detail-seller"></p>
+        <p id="productDescription" class="product-detail-description"></p>
+        <div class="product-detail-purchase">
+          <div><small>Harga</small><strong id="productPrice"></strong></div>
+          <button id="saveProduct" type="button" class="product-save-button">♡ Simpan ke wishlist</button>
+          <button type="button" class="product-buy-button" disabled>Beli sekarang</button>
+          <p class="product-checkout-note">Checkout dan pembayaran belum diaktifkan. Gicomm belum memiliki order, payment, dan entitlement/download workflow di backend.</p>
+        </div>
+        <a class="product-back-link" href="index.html">← Kembali ke etalase</a>
+      </section>
+    </article>
+  </main>
+  <footer class="market-footer"><a class="market-brand" href="index.html"><span class="market-brand-mark">G</span><span>gicomm</span></a><span>© 2026 Gicomm. Marketplace produk digital.</span><div><a href="index.html">Marketplace</a><a href="login.html">Akun</a></div></footer>
+  <script type="module" src="js/pages/product.js"></script>
+</body>
+</html>

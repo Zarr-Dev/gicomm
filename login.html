@@ -1,80 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width,initial-scale=1" name="viewport"/>
-  <meta name="description" content="Sign in to Gicomm - Access your digital library, saved products, and dashboard."/>
-  <meta name="theme-color" content="#f5f5f2"/>
-  <title>
-   Gicomm &mdash; Sign in
-  </title>
-  <link href="https://fonts.googleapis.com" rel="preconnect"/>
-  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <link href="css/style.css" rel="stylesheet"/>
- </head>
- <body class="auth">
-  <div class="auth-shell">
-   <a class="brand" href="index.html">
-    <span class="brand-mark">
-     G
-    </span>
-    Gicomm
-   </a>
-   <div class="auth-card">
-    <p class="eyebrow">
-     WELCOME BACK
-    </p>
-    <h1>
-     Sign in to Gicomm.
-    </h1>
-    <p class="muted">
-     Access your library, saved products, and dashboard.
-    </p>
-    <form id="loginForm">
-     <label>
-      Email
-      <input id="email" placeholder="you@example.com" required="" type="email"/>
-     </label>
-     <label>
-      Password
-      <input placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required="" type="password"/>
-     </label>
-     <div class="auth-row">
-      <span>
-       Remember me
-      </span>
-      <a href="#" id="forgot">
-       Forgot password?
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f7fb">
+  <meta name="description" content="Masuk atau buat akun Gicomm untuk menjelajahi produk digital, menyimpan produk, dan mengelola ruang kreator.">
+  <title>Masuk / Daftar — Gicomm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="auth">
+  <main class="auth-page">
+    <section class="auth-visual" aria-label="Tentang Gicomm">
+      <a class="market-brand auth-brand" href="index.html" aria-label="Gicomm beranda">
+        <span class="market-brand-mark">G</span><span>gicomm</span>
       </a>
-     </div>
-     <button class="primary wide">
-      Continue
-     </button>
-    </form>
-    <div class="or">
-     or
-    </div>
-    <div class="social">
-     <button class="secondary">
-      Continue with Google
-     </button>
-     <button class="secondary">
-      Continue with GitHub
-     </button>
-    </div>
-    <p class="auth-bottom">
-     Need an account?
-     <a href="#" id="signup">
-      Create demo account
-     </a>
-    </p>
-   </div>
-   <p class="auth-note">
-    Demo frontend &mdash; no credentials are sent anywhere.
-   </p>
-  </div>
-  <script src="js/pages/auth.js" type="module">
-  </script>
- </body>
+      <div class="auth-visual-copy">
+        <span class="auth-visual-kicker"><i></i> DIGITAL GOODS MARKETPLACE</span>
+        <h2>Temukan karya.<br><em>Dukung kreator.</em></h2>
+        <p>Satu tempat untuk menjelajahi aplikasi, e-book, game, film, dan aset digital berkualitas.</p>
+      </div>
+      <div class="auth-visual-art" aria-hidden="true">
+        <div class="auth-art-orbit auth-art-orbit-a"></div>
+        <div class="auth-art-orbit auth-art-orbit-b"></div>
+        <div class="auth-art-card auth-art-card-main"><span>G</span><b>Digital<br>discovery</b><small>CREATE · EXPLORE · COLLECT</small></div>
+        <div class="auth-art-card auth-art-card-float auth-art-card-one">✦<small>CREATORS</small></div>
+        <div class="auth-art-card auth-art-card-float auth-art-card-two">↗<small>NEW IDEAS</small></div>
+      </div>
+      <div class="auth-visual-foot"><span>Discover something meaningful.</span><span>GICOMM / 2026</span></div>
+    </section>
+
+    <section class="auth-main">
+      <div class="auth-card">
+        <div class="auth-card-top">
+          <span class="auth-secure"><span>✓</span> Secure account access</span>
+          <a href="index.html">← Marketplace</a>
+        </div>
+        <div class="auth-heading">
+          <p class="eyebrow">WELCOME BACK</p>
+          <h1>Sign in to Gicomm.</h1>
+          <p class="muted">Akses library, wishlist, dan ruang akun Gicomm milikmu.</p>
+        </div>
+        <p id="authMessage" class="auth-message" role="status" aria-live="polite" hidden></p>
+
+        <form id="loginForm" class="auth-form">
+          <label id="displayNameField" class="auth-field" hidden>
+            <span>Nama tampilan</span>
+            <input id="displayName" autocomplete="name" maxlength="80" placeholder="Nama yang ingin ditampilkan" type="text">
+          </label>
+
+          <label id="emailField" class="auth-field">
+            <span>Email</span>
+            <input id="email" autocomplete="email" inputmode="email" placeholder="nama@email.com" required type="email">
+          </label>
+
+          <label id="passwordField" class="auth-field">
+            <span id="passwordLabel">Password</span>
+            <div class="auth-password-control">
+              <input id="password" autocomplete="current-password" minlength="8" placeholder="Minimal 8 karakter" required type="password">
+              <button id="togglePassword" class="auth-password-toggle" type="button" aria-label="Tampilkan password" aria-pressed="false">Show</button>
+            </div>
+            <small class="auth-field-hint" id="passwordHint">Gunakan password yang kuat dan tidak dipakai di situs lain.</small>
+          </label>
+
+          <label id="confirmPasswordField" class="auth-field" hidden>
+            <span id="confirmPasswordLabel">Konfirmasi password</span>
+            <input id="confirmPassword" autocomplete="new-password" minlength="8" placeholder="Masukkan kembali password" type="password">
+          </label>
+
+          <div class="auth-row">
+            <span class="auth-session-note">Session tersimpan aman di perangkat ini.</span>
+            <a href="#" id="forgot">Lupa password?</a>
+          </div>
+
+          <button class="auth-submit" type="submit">Continue <span>↗</span></button>
+        </form>
+
+        <div class="auth-divider"><span></span><small>ACCOUNT ACCESS</small><span></span></div>
+        <p class="auth-note">Gicomm tidak meminta role Admin saat pendaftaran. Akses administratif hanya diberikan secara khusus dan diverifikasi melalui Supabase.</p>
+        <p class="auth-bottom"><span id="authBottomLabel">Belum punya akun?</span> <a href="#" id="signup">Buat akun</a></p>
+      </div>
+      <footer class="auth-footer"><span>© 2026 Gicomm</span><span>Digital marketplace for everyone.</span></footer>
+    </section>
+  </main>
+  <script type="module" src="js/pages/auth.js"></script>
+</body>
 </html>
