@@ -5,7 +5,10 @@ initMotion();
 initMarketMenu();
 
 
-const state = { user: null, products: [], categories: [], saved: new Set(), category: "all", query: "", sort: "newest" };
+const initialParams = new URLSearchParams(window.location.search);
+const initialQuery = (initialParams.get("q") || "").trim();
+const state = { user: null, products: [], categories: [], saved: new Set(), category: "all", query: initialQuery, sort: "newest" };
+const normalizeSearch = (value = "") => String(value).normalize("NFKD").replace(/[\\u0300-\\u036f]/g, "").toLocaleLowerCase("id-ID").trim();
 const el = (id) => document.getElementById(id);
 const escapeHTML = (value = "") => String(value).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const formatPrice = (value, currency = "IDR") => {
@@ -93,11 +96,12 @@ function renderCategories() {
 }
 
 function visibleProducts() {
+  const tokens = normalizeSearch(state.query).split(/\\s+/).filter(Boolean);
   const items = state.products.filter((p) => {
     const cat = state.categories.find((c) => c.id === p.category_id);
-    const haystack = [p.title,p.description,p.type_name,p.seller_name,cat?.name].join(" ").toLowerCase();
-    return (!state.query || haystack.includes(state.query)) &&
-      (state.category === "all" || p.category_id === state.category);
+    const haystack = normalizeSearch([p.title,p.slug,p.description,p.type_name,p.seller_name,cat?.name].join(" "));
+    const matchesEveryTerm = tokens.every((term) => haystack.includes(term));
+    return matchesEveryTerm && (state.category === "all" || p.category_id === state.category);
   });
   if (state.sort === "title") items.sort((a,b) => a.title.localeCompare(b.title,"id"));
   if (state.sort === "price-low") items.sort((a,b) => Number(a.price)-Number(b.price));
@@ -108,8 +112,12 @@ function visibleProducts() {
 
 function renderProducts() {
   const items = visibleProducts();
-  el("resultText").textContent = state.products.length ? items.length + " produk tersedia" : "Etalase sedang disiapkan";
   const hasFilters = Boolean(state.query) || state.category !== "all";
+  el("resultText").textContent = state.products.length
+    ? (hasFilters ? items.length + " produk ditemukan" : state.products.length + " produk tersedia")
+    : "Etalase sedang disiapkan";
+  const clearInput = el("clearSearchInput");
+  if (clearInput) clearInput.hidden = !state.query;
   el("emptyState").hidden = state.products.length > 0 || hasFilters;
   el("searchEmpty").hidden = state.products.length > 0
     ? items.length > 0
@@ -172,14 +180,34 @@ async function toggleSaved(productId) {
   toast(exists ? "Produk dihapus dari wishlist." : "Produk disimpan ke wishlist.");
 }
 
+el("search").value = initialQuery;
+el("marketSearchForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  state.query = el("search").value.trim();
+  const url = new URL(window.location.href);
+  if (state.query) url.searchParams.set("q", state.query);
+  else url.searchParams.delete("q");
+  history.replaceState({}, "", url.pathname + url.search + url.hash);
+  renderProducts();
+  el("catalog").scrollIntoView({ behavior: "smooth", block: "start" });
+});
 el("search").addEventListener("input", (event) => {
-  state.query = event.target.value.trim().toLowerCase();
+  state.query = event.target.value.trim();
+  if (!state.query && state.category === "all") {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("q");
+    history.replaceState({}, "", url.pathname + url.search + url.hash);
+  }
   renderProducts();
 });
-el("searchBtn").addEventListener("click", () => {
-  el("search").focus();
-  state.query = el("search").value.trim().toLowerCase();
+el("clearSearchInput").addEventListener("click", () => {
+  el("search").value = "";
+  state.query = "";
+  const url = new URL(window.location.href);
+  url.searchParams.delete("q");
+  history.replaceState({}, "", url.pathname + url.search + url.hash);
   renderProducts();
+  el("search").focus();
 });
 el("categoryList").addEventListener("click", (event) => {
   const button = event.target.closest("[data-category]");
