@@ -1,5 +1,8 @@
 import { getTheme, setTheme } from "../components/storage.js";
 import { requireUser, signOut } from "../lib/auth.js";
+import { initMotion } from "../components/interactions.js";
+initMotion();
+
 
 const authContext = await requireUser();
 if (!authContext) throw new Error("Redirecting to sign in.");
