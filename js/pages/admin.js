@@ -333,9 +333,12 @@ async function loadUsers(){
     const role=user.role==="admin"?"admin":"member";
     const created=user.created_at?new Date(user.created_at).toLocaleDateString("id-ID"):"—";
     const last=user.last_sign_in_at?new Date(user.last_sign_in_at).toLocaleString("id-ID"):"Belum pernah";
-    return '<tr><td><strong>'+esc(user.email||"Tanpa email")+'</strong><small>'+esc(user.id)+'</small></td><td>'+created+'</td><td>'+last+'</td><td>'+statusBadge(role)+'</td><td>'+
-      (user.id===currentUser.id?'<small>Admin yang sedang digunakan</small>':'<select data-user-role="'+user.id+'"><option value="member" '+(role==="member"?"selected":"")+'>Member</option><option value="admin" '+(role==="admin"?"selected":"")+'>Admin</option></select><button data-save-role="'+user.id+'">Simpan role</button>')+
-      '</td></tr>';
+    const roleAction = user.id === currentUser.id
+      ? '<small>Admin utama yang sedang digunakan</small>'
+      : role === "admin"
+        ? '<select data-user-role="'+user.id+'"><option value="admin" disabled selected>Admin utama / legacy</option><option value="member">Turunkan ke Member</option></select><button data-save-role="'+user.id+'">Turunkan role</button>'
+        : '<small>Role Member standar · tidak dapat dipromosikan menjadi Admin</small>';
+    return '<tr><td><strong>'+esc(user.email||"Tanpa email")+'</strong><small>'+esc(user.id)+'</small></td><td>'+created+'</td><td>'+last+'</td><td>'+statusBadge(role)+'</td><td>'+roleAction+'</td></tr>';
   }).join("")||'<tr><td colspan="5">Belum ada akun.</td></tr>';
 }
 $("refreshUsers").addEventListener("click",loadUsers);
