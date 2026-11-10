@@ -65,16 +65,16 @@ function setMode(nextMode) {
   signupLink.parentElement.hidden = isRecovery;
   signupLink.textContent = isSignup ? "Masuk di sini" : isResetRequest ? "Kembali masuk" : "Buat akun";
   bottomLabel.textContent = isSignup ? "Sudah punya akun?" : isResetRequest ? "" : "Belum punya akun?";
-  submitButton.textContent = isSignup ? "Create account" : isRecovery ? "Update password" :
-    isResetRequest ? "Send recovery link" : "Continue";
+  submitButton.textContent = isSignup ? "Buat akun" : isRecovery ? "Perbarui password" :
+    isResetRequest ? "Kirim tautan pemulihan" : "Masuk";
   showMessage("");
 }
 
 function setBusy(busy) {
   submitButton.disabled = busy;
-  submitButton.textContent = busy ? "Please wait…" :
-    mode === "signup" ? "Create account" : mode === "recovery" ? "Update password" :
-    mode === "reset-request" ? "Send recovery link" : "Continue";
+  submitButton.textContent = busy ? "Memproses…" :
+    mode === "signup" ? "Buat akun" : mode === "recovery" ? "Perbarui password" :
+    mode === "reset-request" ? "Kirim tautan pemulihan" : "Masuk";
 }
 
 async function submit(event) {
@@ -164,7 +164,7 @@ async function redirectIfAlreadyAuthenticated() {
       : user.app_metadata?.role === "admin" ? "admin.html" : "dashboard.html";
     window.location.replace(destination);
   } catch (error) {
-    console.warn("Could not check the existing Gicomm session:", error);
+    console.warn("Tidak dapat memeriksa sesi Gicomm yang aktif:", error);
   }
 }
 await redirectIfAlreadyAuthenticated();
