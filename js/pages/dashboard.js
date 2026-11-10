@@ -1,4 +1,5 @@
 import { getTheme, setTheme } from "../components/storage.js";
+import { supabase } from "../lib/supabase.js";
 import { requireUser, signOut } from "../lib/auth.js";
 import { initMotion } from "../components/interactions.js";
 
@@ -38,8 +39,8 @@ const sections = {
   },
   Saved: {
     title: "Wishlist",
-    subtitle: "Simpan produk dari marketplace untuk menemukannya kembali.",
-    content: `<div><i></i><b>Wishlist tersedia di marketplace</b><span>Buka etalase, lalu gunakan ikon hati pada produk untuk menyimpan pilihan.</span><time>Siap digunakan</time></div>`,
+    subtitle: "Produk digital yang kamu simpan dari marketplace.",
+    content: "",
   },
   Orders: {
     title: "Pesanan",
@@ -61,8 +62,56 @@ const sections = {
 const tabTitle = document.querySelector("#tabTitle");
 const tabSubtitle = document.querySelector("#tabSub");
 const activitiesContainer = document.querySelector(".activities");
+const escapeHTML = (value = "") => String(value).replace(/[&<>"']/g, (char) => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;",
+}[char]));
+const formatPrice = (value, currency = "IDR") => {
+  try { return new Intl.NumberFormat("id-ID", {style:"currency",currency,maximumFractionDigits:0}).format(Number(value || 0)); }
+  catch { return String(value || 0) + " " + currency; }
+};
+
+async function renderSavedProducts() {
+  activitiesContainer.classList.add("saved-view");
+  activitiesContainer.innerHTML = '<p class="dashboard-saved-loading">Memuat wishlist...</p>';
+  try {
+    const {data: savedRows,error: savedError} = await supabase
+      .from("saved_products").select("product_id,created_at")
+      .eq("user_id",user.id).order("created_at",{ascending:false});
+    if (savedError) throw savedError;
+    const ids = (savedRows || []).map((row) => row.product_id);
+    document.querySelector("#dashboardSavedCount").textContent = String(ids.length);
+    document.querySelector("#dashboardSavedCaption").textContent = ids.length === 1 ? "Produk tersimpan" : "Produk tersimpan";
+    if (!ids.length) {
+      activitiesContainer.innerHTML = '<div class="dashboard-saved-empty"><span>♡</span><b>Wishlist masih kosong</b><p>Simpan produk melalui ikon hati di etalase agar mudah ditemukan kembali.</p><a href="index.html#catalog">Jelajahi produk ↗</a></div>';
+      return;
+    }
+    const {data: products,error: productsError} = await supabase
+      .from("products")
+      .select("id,title,slug,description,price,currency")
+      .in("id",ids).eq("status","published");
+    if (productsError) throw productsError;
+    const order = new Map(ids.map((id,index) => [id,index]));
+    const items = (products || []).sort((a,b) => order.get(a.id)-order.get(b.id));
+    if (!items.length) {
+      activitiesContainer.innerHTML = '<div class="dashboard-saved-empty"><span>♡</span><b>Produk belum tersedia</b><p>Produk yang kamu simpan mungkin sudah tidak dipublikasikan. Kembali ke etalase untuk menemukan karya lainnya.</p><a href="index.html#catalog">Buka etalase ↗</a></div>';
+      return;
+    }
+    activitiesContainer.innerHTML = '<div class="dashboard-saved-grid">' + items.map((product) =>
+      '<a class="dashboard-saved-card" href="product.html?id='+encodeURIComponent(product.id)+'">'+
+      '<span class="dashboard-saved-mark">G</span><span class="dashboard-saved-copy"><b>'+escapeHTML(product.title)+'</b>'+
+      '<small>'+escapeHTML((product.description||"Produk digital di Gicomm").slice(0,110))+'</small></span>'+
+      '<strong>'+escapeHTML(formatPrice(product.price,product.currency))+'</strong></a>'
+    ).join("") + '</div>';
+  } catch (error) {
+    document.querySelector("#dashboardSavedCount").textContent = "—";
+    document.querySelector("#dashboardSavedCaption").textContent = "Belum dapat dimuat";
+    activitiesContainer.innerHTML = '<div class="dashboard-saved-empty"><b>Wishlist belum dapat dimuat</b><p>'+escapeHTML(error.message||"Periksa koneksi lalu coba kembali.")+'</p><button type="button" id="retrySavedProducts">Coba lagi</button></div>';
+    document.querySelector("#retrySavedProducts")?.addEventListener("click",renderSavedProducts,{once:true});
+  }
+}
+
 document.querySelectorAll("[data-tab]").forEach((button) => {
-  button.addEventListener("click", () => {
+  button.addEventListener("click", async () => {
     document.querySelectorAll("[data-tab]").forEach((item) => {
       item.classList.remove("active");
       item.removeAttribute("aria-current");
@@ -73,7 +122,12 @@ document.querySelectorAll("[data-tab]").forEach((button) => {
     if (!tabData) return;
     tabTitle.textContent = tabData.title;
     tabSubtitle.textContent = tabData.subtitle;
-    activitiesContainer.innerHTML = tabData.content;
+    if (button.dataset.tab === "Saved") {
+      await renderSavedProducts();
+    } else {
+      activitiesContainer.classList.remove("saved-view");
+      activitiesContainer.innerHTML = tabData.content;
+    }
   });
 });
 
