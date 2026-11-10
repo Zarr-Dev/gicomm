@@ -1,5 +1,8 @@
 import { supabase } from "../lib/supabase.js";
 import { getTheme, setTheme } from "../components/storage.js";
+import { initMotion } from "../components/interactions.js";
+initMotion();
+
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(window.location.search);
