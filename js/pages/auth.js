@@ -34,24 +34,24 @@ function setMode(nextMode) {
   const isRecovery = mode === "recovery";
   const isResetRequest = mode === "reset-request";
   document.querySelector(".auth-card .eyebrow").textContent =
-    isSignup ? "CREATE YOUR ACCOUNT" : isRecovery ? "CHOOSE A NEW PASSWORD" :
-    isResetRequest ? "PASSWORD RECOVERY" : "WELCOME BACK";
+    isSignup ? "BUAT AKUN GICOMM" : isRecovery ? "BUAT PASSWORD BARU" :
+    isResetRequest ? "PEMULIHAN PASSWORD" : "SELAMAT DATANG KEMBALI";
   document.querySelector(".auth-card h1").textContent =
-    isSignup ? "Join Gicomm." : isRecovery ? "Set a new password." :
-    isResetRequest ? "Reset your password." : "Sign in to Gicomm.";
+    isSignup ? "Bergabung dengan Gicomm." : isRecovery ? "Atur password baru." :
+    isResetRequest ? "Reset password." : "Masuk ke Gicomm.";
   document.querySelector(".auth-heading > .muted").textContent =
-    isSignup ? "Create an account to discover and manage digital products." :
-    isRecovery ? "Choose a new password for your Gicomm account." :
-    isResetRequest ? "Enter your account email and we will send a recovery link." :
-    "Access your library, saved products, and dashboard.";
+    isSignup ? "Buat akun untuk menjelajahi dan mengelola produk digital." :
+    isRecovery ? "Pilih password baru untuk akun Gicomm milikmu." :
+    isResetRequest ? "Masukkan email akun untuk menerima tautan pemulihan." :
+    "Akses koleksi, wishlist, dan ruang akun Gicomm milikmu.";
   document.querySelector("#displayNameField").hidden = !isSignup;
   document.querySelector("#emailField").hidden = isRecovery;
   document.querySelector("#passwordField").hidden = isResetRequest;
   document.querySelector("#confirmPasswordField").hidden = !(isSignup || isRecovery);
   document.querySelector("#confirmPasswordLabel").textContent =
-    isRecovery ? "Confirm new password" : "Confirm password";
+    isRecovery ? "Konfirmasi password baru" : "Konfirmasi password";
   document.querySelector("#passwordLabel").textContent =
-    isRecovery ? "New password" : "Password";
+    isRecovery ? "Password baru" : "Password";
   document.querySelector("#passwordHint").hidden = !isSignup && !isRecovery;
   togglePasswordButton.hidden = isResetRequest;
   passwordInput.autocomplete = isRecovery || isSignup ? "new-password" : "current-password";
@@ -96,7 +96,7 @@ async function submit(event) {
       if (data.session) window.location.assign(safeNext);
       else {
         setMode("signin");
-        showMessage("Account created. Check your email to confirm the address, then sign in.", "success");
+        showMessage("Akun berhasil dibuat. Periksa email untuk mengonfirmasi alamat, lalu masuk.", "success");
       }
       return;
     }
@@ -115,20 +115,20 @@ async function submit(event) {
         redirectTo: `${window.location.origin}/login.html?mode=recovery`,
       });
       if (error) throw error;
-      showMessage("If an account exists for that email, a password recovery link has been sent.", "success");
+      showMessage("Bila email terdaftar, tautan pemulihan password akan dikirimkan.", "success");
       return;
     }
     if (mode === "recovery") {
-      if (password !== confirmPasswordInput.value) throw new Error("The passwords do not match.");
-      if (password.length < 8) throw new Error("Use a password with at least 8 characters.");
+      if (password !== confirmPasswordInput.value) throw new Error("Password dan konfirmasi belum sama.");
+      if (password.length < 8) throw new Error("Gunakan password minimal 8 karakter.");
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       await supabase.auth.signOut();
       setMode("signin");
-      showMessage("Password updated. You can now sign in with your new password.", "success");
+      showMessage("Password berhasil diperbarui. Silakan masuk menggunakan password baru.", "success");
     }
   } catch (error) {
-    showMessage(error?.message || "Authentication failed. Please try again.", "error");
+    showMessage(error?.message || "Autentikasi gagal. Silakan periksa kembali data akunmu.", "error");
   } finally {
     setBusy(false);
   }
@@ -138,7 +138,7 @@ form.addEventListener("submit", submit);
 togglePasswordButton.addEventListener("click", () => {
   const reveal = passwordInput.type === "password";
   passwordInput.type = reveal ? "text" : "password";
-  togglePasswordButton.textContent = reveal ? "Hide" : "Show";
+  togglePasswordButton.textContent = reveal ? "Sembunyikan" : "Tampilkan";
   togglePasswordButton.setAttribute("aria-label", reveal ? "Sembunyikan password" : "Tampilkan password");
   togglePasswordButton.setAttribute("aria-pressed", String(reveal));
 });
