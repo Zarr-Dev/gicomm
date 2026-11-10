@@ -18,6 +18,7 @@ This repository is an early marketplace implementation, not yet a complete produ
 index.html                         Marketplace-first storefront
 login.html                         Supabase email authentication
 dashboard.html                     Authenticated customer dashboard
+product.html                        Live product detail page
 admin.html                          Admin Control Center
 css/style.css                      Storefront, account, and admin styles
 js/components/storage.js            Local theme preference helpers
@@ -27,11 +28,12 @@ js/lib/supabase.js                  Pinned Supabase JS 2.118.0 browser client
 js/lib/auth.js                      Session, profile, and Admin guards
 js/pages/auth.js                    Sign-up, sign-in, and password recovery
 js/pages/marketplace.js             Live catalog, category filters, wishlist
+js/pages/product.js                 Live product detail and wishlist page
 js/pages/dashboard.js               Authenticated account dashboard
 js/pages/admin.js                   Product, taxonomy, moderation, and user UI
 config/supabase.js                  Public project URL and publishable key
 config/supabase.example.js          Safe configuration template
-supabase/migrations/                Immutable applied migrations 001–007
+supabase/migrations/                Immutable applied migrations 001–008
 supabase/functions/gicomm-admin/   Trusted Admin user-management function
 docs/backend-implementation.md      Architecture, role bootstrap, and roadmap
 ```
@@ -40,9 +42,9 @@ docs/backend-implementation.md      Architecture, role bootstrap, and roadmap
 
 - Marketplace-first layout with search and dynamic category filters.
 - Public catalog reads only products with `status = 'published'`.
-- Product cards read from PostgreSQL; cover images use time-limited signed URLs from the private `product-assets` bucket.
+- Product cards link to a full product-detail page that reads the published listing from PostgreSQL; cover images use time-limited signed URLs from the private `product-assets` bucket.
 - Signed-in users can save/remove published products through `saved_products`.
-- When the database has no published products, the page displays clearly labeled empty product slots rather than fake listings.
+- When the database has no published products, the page displays an honest empty state rather than fake listings.
 - No checkout or payment action is exposed yet.
 
 ## Admin Control Center
@@ -55,13 +57,13 @@ Admin features implemented in the branch:
 - Category and product-type creation and activation controls.
 - Product-type/category mapping management.
 - Approval/rejection of seller product revisions with a required rejection note.
-- User directory and Admin/Member role controls through a server-side Edge Function.
+- User directory and safe cleanup of any legacy duplicate Admin accounts through a server-side Edge Function.
 
 Admin permissions are enforced twice:
 1. Browser route guard checks `user.app_metadata.role`.
 2. Database RLS and the `gicomm-admin` Edge Function authorize against trusted Auth `app_metadata`, never user-editable `user_metadata`.
 
-The Edge Function prevents an Admin from changing their own role, requires confirmed email before promotion, and prevents demoting the last Admin. It returns a limited user directory and does not expose passwords or private metadata.
+The Edge Function never promotes a second Admin. Migration 008 adds a database trigger that blocks a second Admin at the Auth table, and prevents deleting or demoting the only Admin. The function returns a limited user directory and does not expose passwords or private metadata.
 
 ### Initial Admin provisioning
 
@@ -76,7 +78,7 @@ WHERE lower(email) = lower('ADMIN_EMAIL_HERE')
 RETURNING id, email, raw_app_meta_data ->> 'role' AS assigned_role;
 ```
 
-Run this once for the first trusted Admin only. Do not write the role to `raw_user_meta_data` or let a browser form set it. The account should sign out and sign in again after provisioning so its session receives the new claim. Further Admin promotions/demotions are available in the Admin Control Center.
+Run this once for the first trusted Admin only. Do not write the role to `raw_user_meta_data` or let a browser form set it. The account should sign out and sign in again after provisioning so its session receives the new claim. Additional Admin promotions are blocked; the current sole Admin cannot be demoted or deleted through the application.
 
 ## Supabase architecture
 
@@ -95,11 +97,12 @@ Only the Supabase publishable key is used in browser code. Secret/service-role c
 |---|---|
 | Supabase email/password Auth | Implemented; live browser E2E pending |
 | Authenticated dashboard guard | Implemented |
+| Full product detail page | Implemented in feature branch |
 | Marketplace-first storefront | Implemented in feature branch |
 | Live published product catalog | Implemented in feature branch; currently empty |
 | Persistent wishlist | Implemented in feature branch |
 | Admin Control Center | Implemented in feature branch |
-| Admin user-role Edge Function | Deployed to Supabase; Admin account bootstrap pending |
+| Admin user-role Edge Function | Deployed v2; single-Admin guard active; first Admin bootstrap pending |
 | Product image/file upload | Implemented in Admin UI; end-to-end tests pending |
 | Product revision moderation | Implemented in Admin UI; end-to-end tests pending |
 | Orders, checkout, payments | Deferred |
@@ -108,7 +111,7 @@ Only the Supabase publishable key is used in browser code. Secret/service-role c
 
 ## Migration integrity
 
-Migrations 001–007 (including the historical 004.1 migration) are already applied and validated. They are immutable: do not edit, rename, delete, or replay them. This storefront/Admin phase adds no database migration and does not alter the existing schema.
+Migrations 001–008 (including historical 004.1) are applied and verified. All applied migrations are immutable: do not edit, rename, delete, or replay them. Migration 008 adds a database-level guard for the single primary Admin.
 
 ## Roadmap
 
