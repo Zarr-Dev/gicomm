@@ -9,6 +9,8 @@ const message = document.querySelector("#authMessage");
 const submitButton = form.querySelector('button[type="submit"], button:not([type])');
 const signupLink = document.querySelector("#signup");
 const forgotLink = document.querySelector("#forgot");
+const bottomLabel = document.querySelector("#authBottomLabel");
+const togglePasswordButton = document.querySelector("#togglePassword");
 
 const params = new URLSearchParams(window.location.search);
 const nextPath = params.get("next");
@@ -42,17 +44,24 @@ function setMode(nextMode) {
   document.querySelector("#displayNameField").hidden = !isSignup;
   document.querySelector("#emailField").hidden = isRecovery;
   document.querySelector("#passwordField").hidden = isResetRequest;
-  document.querySelector("#confirmPasswordField").hidden = !isRecovery;
-  document.querySelector("#passwordLabel").textContent = isRecovery ? "New password" : "Password";
+  document.querySelector("#confirmPasswordField").hidden = !(isSignup || isRecovery);
+  document.querySelector("#confirmPasswordLabel").textContent =
+    isRecovery ? "Confirm new password" : "Confirm password";
+  document.querySelector("#passwordLabel").textContent =
+    isRecovery ? "New password" : "Password";
+  document.querySelector("#passwordHint").hidden = !isSignup && !isRecovery;
+  togglePasswordButton.hidden = isResetRequest;
   passwordInput.autocomplete = isRecovery || isSignup ? "new-password" : "current-password";
   passwordInput.required = !isResetRequest;
+  passwordInput.minLength = isSignup || isRecovery ? 8 : 0;
   emailInput.required = !isRecovery;
-  confirmPasswordInput.required = isRecovery;
+  confirmPasswordInput.required = isSignup || isRecovery;
+  confirmPasswordInput.value = "";
   document.querySelector(".auth-row").hidden = isSignup || isRecovery || isResetRequest;
   forgotLink.hidden = isSignup || isRecovery || isResetRequest;
   signupLink.parentElement.hidden = isRecovery;
-  signupLink.textContent = isSignup ? "Sign in instead" : isResetRequest ? "Back to sign in" : "Create account";
-  signupLink.parentElement.firstChild.textContent = isSignup ? "Already have an account? " : isResetRequest ? "" : "Need an account? ";
+  signupLink.textContent = isSignup ? "Masuk di sini" : isResetRequest ? "Kembali masuk" : "Buat akun";
+  bottomLabel.textContent = isSignup ? "Sudah punya akun?" : isResetRequest ? "" : "Belum punya akun?";
   submitButton.textContent = isSignup ? "Create account" : isRecovery ? "Update password" :
     isResetRequest ? "Send recovery link" : "Continue";
   showMessage("");
@@ -74,8 +83,9 @@ async function submit(event) {
     const password = passwordInput.value;
     if (mode === "signup") {
       const displayName = displayNameInput.value.trim();
-      if (!displayName) throw new Error("Please enter your display name.");
-      if (password.length < 8) throw new Error("Use a password with at least 8 characters.");
+      if (!displayName) throw new Error("Masukkan nama tampilan terlebih dahulu.");
+      if (password.length < 8) throw new Error("Password harus terdiri dari minimal 8 karakter.");
+      if (password !== confirmPasswordInput.value) throw new Error("Konfirmasi password belum sama.");
       const { data, error } = await supabase.auth.signUp({
         email, password, options: { data: { display_name: displayName } },
       });
@@ -90,7 +100,8 @@ async function submit(event) {
     if (mode === "signin") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
       const destination = nextPath ? safeNext :
         user?.app_metadata?.role === "admin" ? "admin.html" : safeNext;
       window.location.assign(destination);
@@ -121,6 +132,13 @@ async function submit(event) {
 }
 
 form.addEventListener("submit", submit);
+togglePasswordButton.addEventListener("click", () => {
+  const reveal = passwordInput.type === "password";
+  passwordInput.type = reveal ? "text" : "password";
+  togglePasswordButton.textContent = reveal ? "Hide" : "Show";
+  togglePasswordButton.setAttribute("aria-label", reveal ? "Sembunyikan password" : "Tampilkan password");
+  togglePasswordButton.setAttribute("aria-pressed", String(reveal));
+});
 signupLink.addEventListener("click", (event) => {
   event.preventDefault();
   setMode(mode === "signup" || mode === "reset-request" ? "signin" : "signup");
@@ -132,3 +150,18 @@ forgotLink.addEventListener("click", (event) => {
 if (mode === "recovery") setMode("recovery");
 else if (params.get("mode") === "signup" || params.get("mode") === "creator") setMode("signup");
 else setMode("signin");
+
+async function redirectIfAlreadyAuthenticated() {
+  if (mode === "recovery" || mode === "reset-request") return;
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) return;
+    const destination = nextPath
+      ? safeNext
+      : user.app_metadata?.role === "admin" ? "admin.html" : "dashboard.html";
+    window.location.replace(destination);
+  } catch (error) {
+    console.warn("Could not check the existing Gicomm session:", error);
+  }
+}
+await redirectIfAlreadyAuthenticated();
