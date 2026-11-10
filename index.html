@@ -16,7 +16,12 @@
   <header class="market-header">
     <a class="market-brand" href="index.html" aria-label="Gicomm beranda"><span class="market-brand-mark">G</span><span>gicomm</span></a>
     <button class="market-menu-toggle" id="marketMenuToggle" type="button" aria-controls="marketNavigation" aria-expanded="false" aria-label="Buka navigasi"><span></span><span></span></button>
-    <label class="market-search" for="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Cari aplikasi, e-book, game, aset digital..." autocomplete="off"><button id="searchBtn" type="button">Cari</button></label>
+    <form class="market-search" id="marketSearchForm" role="search" aria-label="Cari produk digital">
+      <span aria-hidden="true">⌕</span>
+      <input id="search" name="q" type="search" placeholder="Cari aplikasi, e-book, game, aset digital..." autocomplete="off" aria-label="Kata kunci produk">
+      <button id="searchBtn" type="submit">Cari</button>
+      <button class="market-search-clear" id="clearSearchInput" type="button" aria-label="Hapus kata kunci" hidden>×</button>
+    </form>
     <div class="market-actions">
       <button class="market-icon-button theme-toggle" data-theme-toggle="true" type="button" aria-label="Ganti tema">◐</button>
       <a class="market-login" id="signInLink" href="login.html">Masuk</a>
@@ -32,8 +37,8 @@
     </section>
     <section class="market-category-section" id="categories" data-reveal><div class="market-section-heading"><div><span class="market-kicker">PILIHANMU</span><h2>Jelajahi kategori</h2></div><span class="market-heading-note">Temukan sesuai kebutuhan</span></div><div class="market-category-list" id="categoryList"><button class="category-pill active" data-category="all">Semua kategori</button></div></section>
     <section class="market-catalog" id="catalog" data-reveal>
-      <div class="market-section-heading catalog-heading"><div><span class="market-kicker">ETALASE GICOMM</span><h2>Produk digital</h2><p id="resultText">Memuat katalog...</p></div><div class="catalog-controls"><label class="sr-only" for="sort">Urutkan produk</label><select id="sort"><option value="newest">Terbaru</option><option value="title">Nama A–Z</option><option value="price-low">Harga terendah</option><option value="price-high">Harga tertinggi</option></select></div></div>
-      <div class="market-product-grid" id="productGrid" aria-live="polite"></div>
+      <div class="market-section-heading catalog-heading"><div><span class="market-kicker">ETALASE GICOMM</span><h2>Produk digital</h2><p id="resultText" role="status" aria-live="polite" aria-atomic="true">Memuat katalog...</p></div><div class="catalog-controls"><label class="sr-only" for="sort">Urutkan produk</label><select id="sort"><option value="newest">Terbaru</option><option value="title">Nama A–Z</option><option value="price-low">Harga terendah</option><option value="price-high">Harga tertinggi</option></select></div></div>
+      <div class="market-product-grid" id="productGrid" aria-live="polite" aria-relevant="additions text"></div>
       <div class="market-empty" id="emptyState" hidden><div class="empty-illustration" aria-hidden="true"><span>G</span><i>✦</i></div><span class="market-kicker">ETALASE BARU</span><h3>Ruang untuk karya digital berikutnya.</h3><p>Belum ada produk yang dipublikasikan. Produk yang lolos kurasi akan muncul di sini.</p><a href="login.html?mode=creator">Ingin menjadi kreator? Mulai di sini <span>↗</span></a></div>
       <div class="market-empty market-search-empty" id="searchEmpty" hidden><h3>Belum ada hasil yang cocok.</h3><p>Coba kata kunci atau kategori lain.</p><button id="clearSearch" type="button">Hapus pencarian</button></div>
     </section>
