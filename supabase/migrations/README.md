@@ -36,4 +36,4 @@ The SQL files below were recovered from the live project's `supabase_migrations.
 
 ## Verification performed
 
-The eight migration SQL files were fetched from the live migration history and compared with the source-controlled files. All eight matched exactly at the time this inventory was written.
+The nine migration SQL files were fetched from the live migration history and compared with the source-controlled files. All nine matched exactly at the time this inventory was written.
