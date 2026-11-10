@@ -1,4 +1,7 @@
 import { supabase } from "../lib/supabase.js";
+import { initMotion } from "../components/interactions.js";
+initMotion();
+
 
 const form = document.querySelector("#loginForm");
 const emailInput = document.querySelector("#email");

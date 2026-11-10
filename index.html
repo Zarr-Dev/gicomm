@@ -15,6 +15,7 @@
   <div class="market-topline">Temukan karya digital. Dukung kreator. <span>Selamat datang di Gicomm.</span></div>
   <header class="market-header">
     <a class="market-brand" href="index.html" aria-label="Gicomm beranda"><span class="market-brand-mark">G</span><span>gicomm</span></a>
+    <button class="market-menu-toggle" id="marketMenuToggle" type="button" aria-controls="marketNavigation" aria-expanded="false" aria-label="Buka navigasi"><span></span><span></span></button>
     <label class="market-search" for="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Cari aplikasi, e-book, game, aset digital..." autocomplete="off"><button id="searchBtn" type="button">Cari</button></label>
     <div class="market-actions">
       <button class="market-icon-button theme-toggle" data-theme-toggle="true" type="button" aria-label="Ganti tema">◐</button>
@@ -23,20 +24,20 @@
       <a class="market-admin-link" id="adminLink" href="admin.html" hidden>Admin</a>
     </div>
   </header>
-  <nav class="market-nav" aria-label="Navigasi utama"><a class="active" href="#catalog">Beranda</a><a href="#categories">Kategori</a><a href="#catalog">Produk digital</a><a href="#creator">Mulai berjualan</a></nav>
+  <nav class="market-nav" id="marketNavigation" aria-label="Navigasi utama"><a class="active" href="#catalog">Beranda</a><a href="#categories">Kategori</a><a href="#catalog">Produk digital</a><a href="#creator">Mulai berjualan</a></nav>
   <main>
-    <section class="market-hero">
-      <div class="market-hero-copy"><span class="market-kicker"><i></i> DIGITAL GOODS MARKETPLACE</span><h1>Semua karya digital,<br><em>satu tempat.</em></h1><p>Jelajahi aplikasi, e-book, game, film, dan aset digital dari para kreator.</p><a href="#catalog" class="market-hero-cta">Jelajahi etalase <span>↗</span></a></div>
+    <section class="market-hero" data-reveal>
+      <div class="market-hero-copy" data-reveal><span class="market-kicker"><i></i> DIGITAL GOODS MARKETPLACE</span><h1>Semua karya digital,<br><em>satu tempat.</em></h1><p>Jelajahi aplikasi, e-book, game, film, dan aset digital dari para kreator.</p><a href="#catalog" class="market-hero-cta">Jelajahi etalase <span>↗</span></a></div>
       <div class="market-hero-art" aria-hidden="true"><div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div><div class="hero-tile tile-main"><span>G</span><b>Digital<br>discovery</b></div><div class="hero-tile tile-small tile-top">✦<small>CREATE</small></div><div class="hero-tile tile-small tile-bottom">↗<small>EXPLORE</small></div><div class="hero-spark spark-one">✳</div><div class="hero-spark spark-two">✦</div></div>
     </section>
-    <section class="market-category-section" id="categories"><div class="market-section-heading"><div><span class="market-kicker">PILIHANMU</span><h2>Jelajahi kategori</h2></div><span class="market-heading-note">Temukan sesuai kebutuhan</span></div><div class="market-category-list" id="categoryList"><button class="category-pill active" data-category="all">Semua kategori</button></div></section>
-    <section class="market-catalog" id="catalog">
+    <section class="market-category-section" id="categories" data-reveal><div class="market-section-heading"><div><span class="market-kicker">PILIHANMU</span><h2>Jelajahi kategori</h2></div><span class="market-heading-note">Temukan sesuai kebutuhan</span></div><div class="market-category-list" id="categoryList"><button class="category-pill active" data-category="all">Semua kategori</button></div></section>
+    <section class="market-catalog" id="catalog" data-reveal>
       <div class="market-section-heading catalog-heading"><div><span class="market-kicker">ETALASE GICOMM</span><h2>Produk digital</h2><p id="resultText">Memuat katalog...</p></div><div class="catalog-controls"><label class="sr-only" for="sort">Urutkan produk</label><select id="sort"><option value="newest">Terbaru</option><option value="title">Nama A–Z</option><option value="price-low">Harga terendah</option><option value="price-high">Harga tertinggi</option></select></div></div>
       <div class="market-product-grid" id="productGrid" aria-live="polite"></div>
       <div class="market-empty" id="emptyState" hidden><div class="empty-illustration" aria-hidden="true"><span>G</span><i>✦</i></div><span class="market-kicker">ETALASE BARU</span><h3>Ruang untuk karya digital berikutnya.</h3><p>Belum ada produk yang dipublikasikan. Produk yang lolos kurasi akan muncul di sini.</p><a href="login.html?mode=creator">Ingin menjadi kreator? Mulai di sini <span>↗</span></a></div>
       <div class="market-empty market-search-empty" id="searchEmpty" hidden><h3>Belum ada hasil yang cocok.</h3><p>Coba kata kunci atau kategori lain.</p><button id="clearSearch" type="button">Hapus pencarian</button></div>
     </section>
-    <section class="market-creator" id="creator"><div><span class="market-kicker">UNTUK KREATOR</span><h2>Punya karya digital untuk dibagikan?</h2><p>Bangun etalase, kelola produk, dan kembangkan audiensmu di Gicomm.</p></div><a href="login.html?mode=creator">Mulai berjualan <span>↗</span></a></section>
+    <section class="market-creator" id="creator" data-reveal><div><span class="market-kicker">UNTUK KREATOR</span><h2>Punya karya digital untuk dibagikan?</h2><p>Bangun etalase, kelola produk, dan kembangkan audiensmu di Gicomm.</p></div><a href="login.html?mode=creator">Mulai berjualan <span>↗</span></a></section>
   </main>
   <footer class="market-footer"><a class="market-brand" href="index.html"><span class="market-brand-mark">G</span><span>gicomm</span></a><span>© 2026 Gicomm. Marketplace produk digital.</span><div><a href="#categories">Kategori</a><a href="#creator">Untuk kreator</a><a href="login.html">Akun</a></div></footer>
   <div class="market-toast" id="toast" role="status" aria-live="polite"></div>

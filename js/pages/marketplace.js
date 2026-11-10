@@ -1,5 +1,9 @@
 import { supabase } from "../lib/supabase.js";
 import { getTheme, setTheme } from "../components/storage.js";
+import { initMotion, initMarketMenu } from "../components/interactions.js";
+initMotion();
+initMarketMenu();
+
 
 const state = { user: null, products: [], categories: [], saved: new Set(), category: "all", query: "", sort: "newest" };
 const el = (id) => document.getElementById(id);
