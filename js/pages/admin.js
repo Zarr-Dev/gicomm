@@ -7,7 +7,7 @@ initMotion();
 const context = await requireAdmin();
 if (!context) throw new Error("Admin authorization required.");
 const currentUser = context.user;
-const state = { products:[], categories:[], types:[], mappings:[], revisions:[], users:[], reviewProducts:new Map(), reviewSellers:new Map(), editingProduct:null };
+const state = { products:[], categories:[], types:[], mappings:[], revisions:[], users:[], productSellers:new Map(), reviewProducts:new Map(), reviewSellers:new Map(), editingProduct:null };
 const $ = (id) => document.getElementById(id);
 const esc = (v="") => String(v).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const normalizeSearch = (value="") => String(value).normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("id-ID").trim();
@@ -78,6 +78,11 @@ async function loadProducts() {
   const {data,error}=await supabase.from("products").select("id,seller_id,product_type_id,category_id,title,slug,description,price,currency,status,created_at,updated_at").order("created_at",{ascending:false});
   if(error) throw error;
   state.products=data||[];
+  const sellerIds=[...new Set(state.products.map((p)=>p.seller_id).filter(Boolean))];
+  const profiles=sellerIds.length
+    ? await supabase.from("profiles").select("id,display_name").in("id",sellerIds)
+    : {data:[],error:null};
+  state.productSellers=new Map((profiles.data||[]).map((profile)=>[profile.id,profile.display_name]));
   renderProducts();
 }
 async function loadTaxonomy() {
@@ -120,14 +125,14 @@ function renderProducts() {
   const items = state.products.filter((p) => {
     const haystack = normalizeSearch([
       p.title,p.slug,p.description,categories.get(p.category_id),
-      types.get(p.product_type_id),p.status,p.price
+      types.get(p.product_type_id),state.productSellers.get(p.seller_id),p.status,p.price
     ].join(" "));
     return tokens.every((term) => haystack.includes(term)) &&
       (statusFilter === "all" || p.status === statusFilter);
   });
   $("productResultCount").textContent = items.length + " dari " + state.products.length + " produk";
   $("productRows").innerHTML = items.length ? items.map((p) =>
-    '<tr><td><strong>'+esc(p.title)+'</strong><small>'+esc(types.get(p.product_type_id)||"Jenis tidak diketahui")+' · '+esc(p.slug)+'</small></td>'+
+    '<tr><td><strong>'+esc(p.title)+'</strong><small>'+esc(types.get(p.product_type_id)||"Jenis tidak diketahui")+' · '+esc(p.slug)+' · Kreator: '+esc(state.productSellers.get(p.seller_id)||"—")+'</small></td>'+
     '<td>'+esc(categories.get(p.category_id)||"—")+'</td><td>'+money(p.price,p.currency)+'</td><td>'+statusBadge(p.status)+'</td>'+
     '<td><button data-edit-product="'+p.id+'">Edit</button>'+
     (p.status==="published"?'<button data-product-status="'+p.id+'" data-next-status="archived">Arsipkan</button>':
@@ -163,6 +168,7 @@ function renderTaxonomy() {
   $("mappingRows").innerHTML=visibleMappings.map((m)=>
     '<tr><td>'+esc(typeNames.get(m.product_type_id)||"—")+'</td><td>'+esc(catNames.get(m.category_id)||"—")+'</td><td><button data-remove-mapping="'+m.product_type_id+'" data-category-id="'+m.category_id+'">Hapus hubungan</button></td></tr>'
   ).join("")||'<tr><td colspan="3">'+(state.mappings.length?"Pemetaan tidak ditemukan.":"Belum ada pemetaan.")+'</td></tr>';
+  renderProducts();
 }
 
 function updateProductCategories() {
