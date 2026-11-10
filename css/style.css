@@ -1420,3 +1420,49 @@ body.dark .auth-note,body.dark .auth-footer { color:#918ba9; }
   .auth-row { align-items:flex-start; }
   .auth-session-note { max-width:52%;line-height:1.5; }
 }
+
+
+
+/* Gicomm full product-detail page */
+.product-detail-page { min-height:100vh;display:flex;flex-direction:column; }
+.product-detail-page .market-header { width:100%;max-width:none;padding:0 max(24px,calc((100vw - 1180px)/2)); }
+.product-header-links { display:flex;align-items:center;gap:24px;color:var(--market-muted);font-size:11px;font-weight:700; }
+.product-header-links a:hover { color:var(--market-purple); }
+.product-detail-wrap { width:min(1180px,calc(100% - 48px));margin:0 auto;flex:1;padding:22px 0 70px; }
+.product-breadcrumb { display:flex;align-items:center;gap:10px;color:var(--market-muted);font-size:10px;margin:6px 0 30px; }
+.product-breadcrumb a { color:var(--market-purple);font-weight:700; }
+.product-state { padding:44px 20px;text-align:center;color:var(--market-muted);background:var(--market-card);border:1px solid var(--market-line);border-radius:18px;font-size:13px; }
+.product-detail-layout { display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:clamp(28px,5vw,70px);align-items:start; }
+.product-detail-visual { min-width:0; }
+.product-detail-cover { min-height:390px;display:grid;place-items:center;overflow:hidden;border:1px solid var(--market-line);border-radius:22px;background:linear-gradient(135deg,var(--market-soft),#e7e3ff);color:var(--market-purple);font:800 82px "Plus Jakarta Sans",sans-serif; }
+.product-detail-cover img { width:100%;height:100%;min-height:390px;object-fit:cover; }
+.product-safe-note { display:flex;align-items:center;gap:9px;margin-top:14px;color:var(--market-muted);font-size:10px; }
+.product-safe-note span { width:19px;height:19px;display:grid;place-items:center;border-radius:50%;background:#e8f7ef;color:#24744d;font-weight:800; }
+.product-detail-info { padding:12px 0; }
+.product-detail-tags { display:flex;flex-wrap:wrap;gap:8px; }
+.product-detail-tags span { padding:6px 9px;border-radius:7px;color:var(--market-purple);background:var(--market-soft);font-size:9px;font-weight:800; }
+.product-detail-info h1 { margin:20px 0 7px;color:var(--market-text);font:800 clamp(28px,4vw,42px)/1.16 "Plus Jakarta Sans",sans-serif;letter-spacing:-.045em; }
+.product-detail-seller { margin:0;color:var(--market-muted);font-size:11px; }
+.product-detail-description { margin:25px 0;color:var(--market-muted);font-size:13px;line-height:1.9;white-space:pre-wrap; }
+.product-detail-purchase { padding:20px;border:1px solid var(--market-line);border-radius:17px;background:var(--market-card); }
+.product-detail-purchase>div { display:flex;flex-direction:column;gap:4px;margin-bottom:18px; }
+.product-detail-purchase small { color:var(--market-muted);font-size:10px; }
+.product-detail-purchase strong { color:var(--market-text);font:800 24px "Plus Jakarta Sans",sans-serif; }
+.product-save-button,.product-buy-button { width:100%;min-height:44px;border-radius:10px;font:800 11px "DM Sans",sans-serif; }
+.product-save-button { border:1px solid var(--market-line);color:var(--market-text);background:var(--market-card); }
+.product-save-button:hover { border-color:#9a8de6;color:var(--market-purple); }
+.product-buy-button { margin-top:9px;border:0;color:#fff;background:#aaa5bd;cursor:not-allowed; }
+.product-checkout-note { margin:12px 0 0;color:var(--market-muted);font-size:9px;line-height:1.7; }
+.product-back-link { display:inline-block;margin-top:22px;color:var(--market-purple);font-size:10px;font-weight:800; }
+body.dark .product-detail-cover { background:linear-gradient(135deg,#2c2843,#252239); }
+body.dark .product-detail-purchase { background:#1d1a2b; }
+body.dark .product-state { background:#1d1a2b; }
+@media(max-width:800px) {
+  .product-detail-layout { grid-template-columns:1fr;gap:25px; }
+  .product-detail-cover,.product-detail-cover img { min-height:280px; }
+}
+@media(max-width:520px) {
+  .product-detail-wrap { width:calc(100% - 28px); }
+  .product-header-links { gap:13px;font-size:10px; }
+  .product-detail-cover,.product-detail-cover img { min-height:230px; }
+}
