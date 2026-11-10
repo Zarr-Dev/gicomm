@@ -59,6 +59,8 @@ const sections = {
   },
 };
 
+loadSavedCount();
+
 const tabTitle = document.querySelector("#tabTitle");
 const tabSubtitle = document.querySelector("#tabSub");
 const activitiesContainer = document.querySelector(".activities");
@@ -70,6 +72,19 @@ const formatPrice = (value, currency = "IDR") => {
   catch { return String(value || 0) + " " + currency; }
 };
 
+async function loadSavedCount() {
+  try {
+    const {count,error} = await supabase.from("saved_products")
+      .select("product_id",{count:"exact",head:true}).eq("user_id",user.id);
+    if (error) throw error;
+    document.querySelector("#dashboardSavedCount").textContent = String(count ?? 0);
+    document.querySelector("#dashboardSavedCaption").textContent = "Produk tersimpan";
+  } catch (error) {
+    document.querySelector("#dashboardSavedCount").textContent = "—";
+    document.querySelector("#dashboardSavedCaption").textContent = "Belum dapat dimuat";
+    console.warn("Wishlist count unavailable:",error);
+  }
+}
 async function renderSavedProducts() {
   activitiesContainer.classList.add("saved-view");
   activitiesContainer.innerHTML = '<p class="dashboard-saved-loading">Memuat wishlist...</p>';
