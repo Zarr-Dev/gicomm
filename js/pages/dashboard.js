@@ -1,54 +1,60 @@
 import { getTheme, setTheme } from "../components/storage.js";
 import { requireUser, signOut } from "../lib/auth.js";
 import { initMotion } from "../components/interactions.js";
+
 initMotion();
 
-
 const authContext = await requireUser();
-if (!authContext) throw new Error("Redirecting to sign in.");
+if (!authContext) throw new Error("Dialihkan ke halaman masuk.");
+
+const user = authContext.user;
 const displayName =
   authContext.profile?.display_name ||
-  authContext.user.user_metadata?.display_name ||
-  authContext.user.email?.split("@")[0] || "Gicomm user";
+  user.user_metadata?.display_name ||
+  user.email?.split("@")[0] ||
+  "Pengguna Gicomm";
 const initials = displayName.split(/\s+/).filter(Boolean).slice(0, 2)
   .map((part) => part[0].toUpperCase()).join("") || "G";
+const isAdmin = user.app_metadata?.role === "admin";
 
 document.querySelector("#accountWelcome").textContent = `, ${displayName}.`;
 document.querySelector("#dashboardAvatar").textContent = initials;
 document.querySelector("#profileAvatar").textContent = initials;
 document.querySelector("#profileDisplayName").textContent = displayName;
-document.querySelector("#profileEmail").textContent = authContext.user.email || "";
+document.querySelector("#profileEmail").textContent = user.email || "";
+document.querySelector("#dashboardRole").textContent = isAdmin ? "Admin utama" : "Member";
+document.querySelector("#dashboardAdminLink").hidden = !isAdmin;
 
 const sections = {
   Overview: {
-    title: "Account overview",
-    subtitle: "Your Gicomm account is authenticated with Supabase.",
-    content: "<div><b>Authentication connected</b><p>Your account session has been verified. Marketplace data will be connected in the next phase.</p></div>",
+    title: "Ringkasan akun",
+    subtitle: "Sesi akun Gicomm berhasil diverifikasi.",
+    content: `<div><i></i><b>Akun terhubung</b><span>Sesi masuk dan identitas akun telah diverifikasi.</span><time>Sekarang</time></div><div><i></i><b>Etalase digital</b><span>Gunakan pencarian dan kategori untuk menemukan karya.</span><time>Marketplace</time></div>`,
   },
   "My Library": {
-    title: "My Library",
-    subtitle: "Digital library integration is scheduled for a later backend phase.",
-    content: "<p>Your purchased digital products will appear here after order and entitlement workflows are implemented.</p>",
+    title: "Koleksi digital",
+    subtitle: "Koleksi akan aktif setelah proses pesanan dan hak akses digital tersedia.",
+    content: `<div><i></i><b>Koleksi belum tersedia</b><span>Checkout, pembayaran, dan pengiriman akses digital belum diaktifkan.</span><time>Menunggu fitur</time></div>`,
   },
   Saved: {
-    title: "Saved products",
-    subtitle: "Persistent wishlist integration is scheduled for the product-data phase.",
-    content: "<p>Your saved products will appear here after the marketplace catalog is connected.</p>",
+    title: "Wishlist",
+    subtitle: "Simpan produk dari marketplace untuk menemukannya kembali.",
+    content: `<div><i></i><b>Wishlist tersedia di marketplace</b><span>Buka etalase, lalu gunakan ikon hati pada produk untuk menyimpan pilihan.</span><time>Siap digunakan</time></div>`,
   },
   Orders: {
-    title: "Orders",
-    subtitle: "Order management is not enabled yet. No payment is being processed.",
-    content: "<p>Order history will appear here after the order lifecycle is implemented and tested.</p>",
+    title: "Pesanan",
+    subtitle: "Belum ada proses pembayaran yang berjalan di Gicomm.",
+    content: `<div><i></i><b>Transaksi belum diaktifkan</b><span>Riwayat pesanan akan tersedia setelah alur order dan pembayaran selesai dibangun.</span><time>Belum aktif</time></div>`,
   },
   Selling: {
-    title: "Seller workspace",
-    subtitle: "Seller product management will be connected in the next backend phase.",
-    content: "<p>Product creation, editing, and moderation will be enabled after catalog integration.</p>",
+    title: "Ruang kreator",
+    subtitle: "Manajemen etalase kreator sedang dipersiapkan.",
+    content: `<div><i></i><b>Fitur penjualan belum tersedia untuk Member</b><span>Pengelolaan produk, revisi, dan moderasi akan dibuka setelah alur kreator siap.</span><time>Persiapan</time></div>`,
   },
   Settings: {
-    title: "Account settings",
-    subtitle: "Profile editing and preferences will be connected in a later phase.",
-    content: "<p>Your authenticated identity is active. Profile management is not enabled yet.</p>",
+    title: "Pengaturan akun",
+    subtitle: "Identitas login dikelola melalui Supabase Authentication.",
+    content: `<div><i></i><b>Keamanan akun</b><span>Jangan bagikan kata sandi. Gunakan fitur lupa password pada halaman masuk bila diperlukan.</span><time>Keamanan</time></div>`,
   },
 };
 
@@ -57,23 +63,35 @@ const tabSubtitle = document.querySelector("#tabSub");
 const activitiesContainer = document.querySelector(".activities");
 document.querySelectorAll("[data-tab]").forEach((button) => {
   button.addEventListener("click", () => {
-    document.querySelectorAll("[data-tab]").forEach((item) => item.classList.remove("active"));
+    document.querySelectorAll("[data-tab]").forEach((item) => {
+      item.classList.remove("active");
+      item.removeAttribute("aria-current");
+    });
     button.classList.add("active");
+    button.setAttribute("aria-current", "page");
     const tabData = sections[button.dataset.tab];
     if (!tabData) return;
     tabTitle.textContent = tabData.title;
     tabSubtitle.textContent = tabData.subtitle;
-    if (activitiesContainer) activitiesContainer.innerHTML = tabData.content;
+    activitiesContainer.innerHTML = tabData.content;
   });
 });
 
+function applyTheme(theme) {
+  document.body.classList.toggle("dark", theme === "dark");
+  document.querySelector("[data-theme-toggle]")?.setAttribute(
+    "aria-label",
+    theme === "dark" ? "Ganti ke tema terang" : "Ganti ke tema gelap",
+  );
+}
 document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
   button.addEventListener("click", () => {
     const nextTheme = document.body.classList.contains("dark") ? "light" : "dark";
     setTheme(nextTheme);
-    document.body.classList.toggle("dark", nextTheme === "dark");
+    applyTheme(nextTheme);
   });
 });
+applyTheme(getTheme());
 
 document.querySelector("#logout").addEventListener("click", async () => {
   const button = document.querySelector("#logout");
@@ -84,7 +102,6 @@ document.querySelector("#logout").addEventListener("click", async () => {
   } catch (error) {
     console.error("Gicomm sign-out failed:", error);
     button.disabled = false;
-    window.alert("Could not sign out. Please try again.");
+    window.alert("Tidak dapat keluar. Silakan coba kembali.");
   }
 });
-document.body.classList.toggle("dark", getTheme() === "dark");
