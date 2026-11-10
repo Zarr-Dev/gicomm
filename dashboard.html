@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
  <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width,initial-scale=1" name="viewport"/>
-  <meta name="description" content="Gicomm Dashboard - Manage your library, wishlist, orders, and sales."/>
-  <meta name="theme-color" content="#f5f5f2"/>
+  <meta name="description" content="Dashboard akun Gicomm untuk mengelola library, wishlist, pesanan, dan profil."/>
+  <meta name="theme-color" content="#f7f7fb"/>
   <title>
    Gicomm &mdash; Dashboard
   </title>
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
   <link href="css/style.css" rel="stylesheet"/>
  </head>
- <body>
+ <body class="account-dashboard">
   <header class="dash-header">
    <a class="brand" href="index.html">
     <span class="brand-mark">
@@ -34,7 +34,7 @@
    </div>
   </header>
   <main class="dash-page">
-   <div class="dash-title">
+   <div class="dash-title" data-reveal>
     <div>
      <p class="eyebrow">
       YOUR ACCOUNT
@@ -46,11 +46,11 @@
       Manage your library, wishlist, orders, sales, and profile.
      </p>
     </div>
-    <a class="primary" href="index.html#discover">
+    <a class="primary" href="index.html#catalog">
      Explore products
     </a>
    </div>
-   <div class="dash-layout">
+   <div class="dash-layout" data-reveal>
     <aside class="dash-nav">
      <button class="active" data-tab="Overview">
       ⌂ Overview
@@ -74,7 +74,7 @@
       &rarrhk; Sign out
      </button>
     </aside>
-    <section class="dash-content">
+    <section class="dash-content" data-reveal>
      <div class="stats">
       <div>
        <small>
