@@ -20,7 +20,7 @@ The Supabase JS dependency is pinned to 2.118.0. The frontend uses the active pu
 - Frontend is native ES modules; there was no package.json or build pipeline.
 - Before this phase, login was demo-only and product data came from `js/data/products.js`.
 - Supabase project: `Gicomm Butterfly`, PostgreSQL 17.11, `ACTIVE_HEALTHY`.
-- Eight applied migration records exist, representing migrations 001–007 (including the historical 004.1 migration).
+- Nine applied migration records exist, representing migrations 001–008 (including the historical 004.1 migration).
 - All application tables have RLS enabled.
 - Security Advisor returned zero lints at the time of the baseline audit.
 - No Edge Functions were deployed at the time of the baseline audit.
@@ -65,7 +65,7 @@ Supabase Auth Site URL and Redirect URLs must include the exact preview/deployme
 - Connect wishlist UI to `saved_products`.
 - Test anonymous reads, authenticated reads, and owner-only wishlist operations.
 
-No new schema migration should be added unless a concrete missing requirement is demonstrated. Migration history 001–007 is immutable.
+No new schema migration should be added unless a concrete missing requirement is demonstrated. Migration history 001–008 is immutable.
 
 ## Phase 3 — Seller workflow and storage
 
@@ -113,16 +113,17 @@ Implemented on branch `feature/digital-marketplace-admin-console`:
 - Added dynamic category navigation from `public.categories`.
 - Storefront reads only `published` products from PostgreSQL and uses signed cover URLs from the private `product-assets` bucket.
 - Wishlist uses the existing `saved_products` table under owner-only RLS.
-- When there are no published products, the storefront renders clearly labeled empty shelf placeholders, not fabricated listings. Live database audit showed zero products at implementation time.
+- When there are no published products, the storefront renders an explicit empty state and no fake product cards. Live database audit showed zero products at implementation time.
+- Added `product.html` and `js/pages/product.js` for full live product details and wishlist actions.
 - Added `admin.html` and `js/pages/admin.js` with overview, product editor, taxonomy controls, revision moderation, and user role management.
 - Product cover and primary file uploads use the existing private Storage buckets and metadata tables. The current UI enforces configured MIME/size allowlists, but browser MIME metadata is not proof of file content. File-signature validation and malware scanning remain required before accepting untrusted seller uploads.
 - Added `requireAdmin()`, which authorizes only `user.app_metadata.role === 'admin'`.
-- Added `supabase/functions/gicomm-admin/index.ts`, using pinned `@supabase/server@1.9.2`. The Edge Function is deployed as `gicomm-admin` with JWT verification enabled. It verifies the current Admin against Auth, lists a limited set of user fields, allows Admin/Member role changes, prevents self-role changes, requires confirmed email for promotion, and protects the last Admin from demotion.
-- No database migration was added. Migrations 001–007 remain unchanged.
+- Added `supabase/functions/gicomm-admin/index.ts`, using pinned `@supabase/server@1.9.2`. The Edge Function is deployed as `gicomm-admin` with JWT verification enabled. It verifies the current Admin against Auth, lists a limited set of user fields, permits demoting legacy duplicate Admin records, never promotes a second Admin, and prevents self-role changes.
+- Migration 008 adds a private `SECURITY DEFINER` trigger on `auth.users` to serialize Admin-role changes and prevent a second Admin, demotion/deletion of the last Admin, or role assignment from a browser-controlled metadata field. The function is not executable by anon, authenticated, or service_role callers.
 
 ### Initial Admin provisioning
 
-The project has no automatically assigned first Admin. After the intended account registers and confirms its email, the project owner must perform a one-time trusted provisioning action in Supabase SQL Editor by updating `auth.users.raw_app_meta_data` for the exact email. The SQL is documented in README. Subsequent role changes use the Admin Control Center. Never place the role in `raw_user_meta_data`.
+The project has no automatically assigned first Admin. After the intended account registers and confirms its email, the project owner must perform a one-time trusted provisioning action in Supabase SQL Editor by updating `auth.users.raw_app_meta_data` for the exact email. The SQL is documented in README. The first Admin is the only Admin. Its role is provisioned once in `raw_app_meta_data`; the application does not support subsequent promotions. Never place the role in `raw_user_meta_data`.
 
 ### Phase 7 verification still required
 
