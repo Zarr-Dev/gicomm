@@ -17,9 +17,23 @@ const togglePasswordButton = document.querySelector("#togglePassword");
 
 const params = new URLSearchParams(window.location.search);
 const nextPath = params.get("next");
-const safeNext = nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")
-  ? nextPath
-  : "dashboard.html";
+
+// Only allow redirects that resolve to this exact origin. Checking only for a
+// leading slash is insufficient because browsers normalize backslashes in URLs.
+function resolveSafeNext(rawNext) {
+  if (!rawNext) return "/dashboard.html";
+  try {
+    const target = new URL(rawNext, window.location.origin);
+    if (target.origin !== window.location.origin) return "/dashboard.html";
+    if (!target.pathname.startsWith("/") || target.pathname.toLowerCase() === "/login.html") {
+      return "/dashboard.html";
+    }
+    return `${target.pathname}${target.search}${target.hash}`;
+  } catch {
+    return "/dashboard.html";
+  }
+}
+const safeNext = resolveSafeNext(nextPath);
 let mode = params.get("mode") === "recovery" ? "recovery" : "signin";
 
 function showMessage(text, kind = "info") {
