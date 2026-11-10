@@ -4,8 +4,18 @@ type AdminAction =
   | { action: "list_users" }
   | { action: "set_role"; user_id: string; role: "admin" | "member" };
 
+const MAX_BODY_BYTES = 4 * 1024;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 const json = (body: unknown, status = 200) =>
-  Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
+  Response.json(body, {
+    status,
+    headers: {
+      "Cache-Control": "no-store, max-age=0",
+      "Pragma": "no-cache",
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
 
 async function listAllUsers(admin: any) {
   const users: any[] = [];
@@ -25,7 +35,9 @@ export default {
     if (req.method !== "POST") return json({ error: "Method not allowed." }, 405);
 
     const actorId = ctx.jwtClaims?.sub;
-    if (!actorId) return json({ error: "Authentication required." }, 401);
+    if (typeof actorId !== "string" || !UUID_PATTERN.test(actorId)) {
+      return json({ error: "Authentication required." }, 401);
+    }
 
     // Resolve the actor from Auth again so revoked roles are not trusted from a stale JWT.
     const { data: actorResult, error: actorError } =
@@ -35,12 +47,36 @@ export default {
       return json({ error: "Admin permission required." }, 403);
     }
 
-    let body: AdminAction;
+    const contentType = req.headers.get("content-type") ?? "";
+    if (!contentType.toLowerCase().startsWith("application/json")) {
+      return json({ error: "Content-Type must be application/json." }, 415);
+    }
+
+    const declaredLength = Number(req.headers.get("content-length") ?? "0");
+    if (Number.isFinite(declaredLength) && declaredLength > MAX_BODY_BYTES) {
+      return json({ error: "Request body is too large." }, 413);
+    }
+
+    let rawBody: string;
     try {
-      body = await req.json();
+      rawBody = await req.text();
+    } catch {
+      return json({ error: "Unable to read request body." }, 400);
+    }
+    if (new TextEncoder().encode(rawBody).byteLength > MAX_BODY_BYTES) {
+      return json({ error: "Request body is too large." }, 413);
+    }
+
+    let parsedBody: unknown;
+    try {
+      parsedBody = JSON.parse(rawBody);
     } catch {
       return json({ error: "Invalid JSON body." }, 400);
     }
+    if (!parsedBody || typeof parsedBody !== "object" || Array.isArray(parsedBody)) {
+      return json({ error: "Request body must be a JSON object." }, 400);
+    }
+    const body = parsedBody as AdminAction;
 
     if (body.action === "list_users") {
       try {
@@ -61,7 +97,7 @@ export default {
     }
 
     if (body.action === "set_role") {
-      if (!body.user_id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.user_id)) {
+      if (typeof body.user_id !== "string" || !UUID_PATTERN.test(body.user_id)) {
         return json({ error: "Invalid user identifier." }, 400);
       }
       if (body.role !== "admin" && body.role !== "member") {
