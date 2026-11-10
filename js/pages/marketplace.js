@@ -105,17 +105,15 @@ function visibleProducts() {
 function renderProducts() {
   const items = visibleProducts();
   el("resultText").textContent = state.products.length ? items.length + " produk tersedia" : "Etalase sedang disiapkan";
-  el("emptyState").hidden = state.products.length > 0 || state.category !== "all";
-  el("searchEmpty").hidden = !(state.products.length > 0 && items.length === 0);
+  const hasFilters = Boolean(state.query) || state.category !== "all";
+  el("emptyState").hidden = state.products.length > 0 || hasFilters;
+  el("searchEmpty").hidden = state.products.length > 0
+    ? items.length > 0
+    : !hasFilters;
 
+  // Never display decorative placeholder cards as if they were real products.
   if (!state.products.length) {
-    el("productGrid").innerHTML = Array.from({length:8}, (_,i) =>
-      '<article class="market-product-card market-placeholder-card" aria-label="Slot produk kosong">' +
-        '<div class="market-product-cover"><span>＋</span></div>' +
-        '<div class="market-product-info"><div class="market-product-tags"><span>AREA ETALASE</span></div>' +
-        '<h3>Ruang produk ' + (i+1) + '</h3><p>Tempat untuk karya digital kreator Gicomm berikutnya.</p>' +
-        '<div class="market-product-bottom"><span class="market-product-price">Segera hadir</span></div></div></article>'
-    ).join("");
+    el("productGrid").innerHTML = "";
     return;
   }
 
@@ -190,7 +188,7 @@ el("sort").addEventListener("change", (event) => { state.sort = event.target.val
 el("productGrid").addEventListener("click", (event) => {
   const view = event.target.closest("[data-view]");
   const save = event.target.closest("[data-save]");
-  if (view) openProduct(view.dataset.view);
+  if (view) window.location.href = "product.html?id=" + encodeURIComponent(view.dataset.view);
   if (save) toggleSaved(save.dataset.save);
 });
 el("modalSave").addEventListener("click", () => toggleSaved(el("modalSave").dataset.save));
