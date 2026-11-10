@@ -10,7 +10,7 @@ const currentUser = context.user;
 const state = { products:[], categories:[], types:[], mappings:[], revisions:[], users:[], reviewProducts:new Map(), reviewSellers:new Map(), editingProduct:null };
 const $ = (id) => document.getElementById(id);
 const esc = (v="") => String(v).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-const normalizeSearch = (value="") => String(value).normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLocaleLowerCase("id-ID").trim();
+const normalizeSearch = (value="") => String(value).normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("id-ID").trim();
 const slugify = (v="") => String(v).normalize("NFKD").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 const money = (v,c="IDR") => { try { return new Intl.NumberFormat("id-ID",{style:"currency",currency:c,maximumFractionDigits:0}).format(Number(v||0)); } catch { return String(v)+" "+c; } };
 let toastTimer;
@@ -116,7 +116,7 @@ function renderProducts() {
   const statusFilter = $("productStatusFilter").value || "all";
   const categories = new Map(state.categories.map((c) => [c.id,c.name]));
   const types = new Map(state.types.map((t) => [t.id,t.name]));
-  const tokens = query.split(/\\s+/).filter(Boolean);
+  const tokens = query.split(/\s+/).filter(Boolean);
   const items = state.products.filter((p) => {
     const haystack = normalizeSearch([
       p.title,p.slug,p.description,categories.get(p.category_id),
