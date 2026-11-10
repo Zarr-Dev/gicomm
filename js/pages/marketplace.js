@@ -8,7 +8,7 @@ initMarketMenu();
 const initialParams = new URLSearchParams(window.location.search);
 const initialQuery = (initialParams.get("q") || "").trim();
 const state = { user: null, products: [], categories: [], saved: new Set(), category: "all", query: initialQuery, sort: "newest" };
-const normalizeSearch = (value = "") => String(value).normalize("NFKD").replace(/[\\u0300-\\u036f]/g, "").toLocaleLowerCase("id-ID").trim();
+const normalizeSearch = (value = "") => String(value).normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("id-ID").trim();
 const el = (id) => document.getElementById(id);
 const escapeHTML = (value = "") => String(value).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const formatPrice = (value, currency = "IDR") => {
@@ -96,7 +96,7 @@ function renderCategories() {
 }
 
 function visibleProducts() {
-  const tokens = normalizeSearch(state.query).split(/\\s+/).filter(Boolean);
+  const tokens = normalizeSearch(state.query).split(/\s+/).filter(Boolean);
   const items = state.products.filter((p) => {
     const cat = state.categories.find((c) => c.id === p.category_id);
     const haystack = normalizeSearch([p.title,p.slug,p.description,p.type_name,p.seller_name,cat?.name].join(" "));
