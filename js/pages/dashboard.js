@@ -120,8 +120,8 @@ async function renderSavedProducts() {
   } catch (error) {
     document.querySelector("#dashboardSavedCount").textContent = "—";
     document.querySelector("#dashboardSavedCaption").textContent = "Belum dapat dimuat";
-    activitiesContainer.innerHTML = '<div class="dashboard-saved-empty"><b>Wishlist belum dapat dimuat</b><p>'+escapeHTML(error.message||"Periksa koneksi lalu coba kembali.")+'</p><button type="button" id="retrySavedProducts">Coba lagi</button></div>';
-    document.querySelector("#retrySavedProducts")?.addEventListener("click",renderSavedProducts,{once:true});
+    activitiesContainer.innerHTML = '<div class="dashboard-saved-empty"><b>Wishlist belum dapat dimuat</b><p>'+escapeHTML(error.message||"Periksa koneksi lalu coba kembali.")+'</p><button type="button" class="dashboard-saved-retry">Coba lagi</button></div>';
+    activitiesContainer.querySelector(".dashboard-saved-retry")?.addEventListener("click",renderSavedProducts,{once:true});
   }
 }
 
