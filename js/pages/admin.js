@@ -1,5 +1,8 @@
 import { supabase } from "../lib/supabase.js";
 import { requireAdmin, signOut } from "../lib/auth.js";
+import { initMotion } from "../components/interactions.js";
+initMotion();
+
 
 const context = await requireAdmin();
 if (!context) throw new Error("Admin authorization required.");
