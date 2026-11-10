@@ -7,9 +7,10 @@ initMotion();
 const context = await requireAdmin();
 if (!context) throw new Error("Admin authorization required.");
 const currentUser = context.user;
-const state = { products:[], categories:[], types:[], mappings:[], revisions:[], users:[], editingProduct:null };
+const state = { products:[], categories:[], types:[], mappings:[], revisions:[], users:[], productSellers:new Map(), reviewProducts:new Map(), reviewSellers:new Map(), editingProduct:null };
 const $ = (id) => document.getElementById(id);
 const esc = (v="") => String(v).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const normalizeSearch = (value="") => String(value).normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("id-ID").trim();
 const slugify = (v="") => String(v).normalize("NFKD").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 const money = (v,c="IDR") => { try { return new Intl.NumberFormat("id-ID",{style:"currency",currency:c,maximumFractionDigits:0}).format(Number(v||0)); } catch { return String(v)+" "+c; } };
 let toastTimer;
@@ -35,11 +36,11 @@ function setPanel(name) {
   document.querySelectorAll(".admin-panel").forEach((panel) => panel.classList.toggle("active",panel.id==="panel-"+name));
   const labels = {
     overview:["Ringkasan","Pantau katalog dan kelola operasional marketplace."],
-    products:["Produk","Buat, edit, publikasikan, dan arsipkan produk digital."],
-    categories:["Kategori","Kelola kelompok produk yang tampil di etalase."],
-    types:["Jenis produk","Atur jenis produk digital dan pemetaan kategorinya."],
-    reviews:["Moderasi revisi","Periksa perubahan produk yang diajukan kreator."],
-    users:["Pengguna & Admin","Kelola role dan akses administratif."],
+    products:["Produk","Cari, buat, edit, terbitkan, dan arsipkan produk digital."],
+    categories:["Kategori","Atur kelompok produk dan status tampilnya di etalase."],
+    types:["Jenis produk","Kelola format produk dan pemetaan kategori."],
+    reviews:["Moderasi revisi","Cari dan periksa perubahan yang diajukan kreator."],
+    users:["Pengguna & Admin","Cari akun dan tinjau hak akses administratif."],
   };
   $("adminPageTitle").textContent = labels[name][0];
   $("adminPageSubtitle").textContent = labels[name][1];
@@ -49,10 +50,39 @@ function setPanel(name) {
 document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click",() => setPanel(button.dataset.panel)));
 document.querySelectorAll("[data-go]").forEach((button) => button.addEventListener("click",() => setPanel(button.dataset.go)));
 
+const navSearch = $("adminNavSearch");
+if (navSearch) {
+  const navButtons = [...document.querySelectorAll(".admin-nav-item")];
+  const updateAdminNav = () => {
+    const query = normalizeSearch(navSearch.value);
+    let visible = 0;
+    navButtons.forEach((button) => {
+      const match = normalizeSearch(button.textContent).includes(query);
+      button.hidden = Boolean(query) && !match;
+      if (match) visible++;
+    });
+    $("adminNavEmpty").hidden = visible > 0;
+  };
+  navSearch.addEventListener("input", updateAdminNav);
+  navSearch.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    const first = navButtons.find((button) => !button.hidden);
+    if (first) first.click();
+  });
+  navSearch.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") { navSearch.value = ""; updateAdminNav(); }
+  });
+}
+
 async function loadProducts() {
   const {data,error}=await supabase.from("products").select("id,seller_id,product_type_id,category_id,title,slug,description,price,currency,status,created_at,updated_at").order("created_at",{ascending:false});
   if(error) throw error;
   state.products=data||[];
+  const sellerIds=[...new Set(state.products.map((p)=>p.seller_id).filter(Boolean))];
+  const profiles=sellerIds.length
+    ? await supabase.from("profiles").select("id,display_name").in("id",sellerIds)
+    : {data:[],error:null};
+  state.productSellers=new Map((profiles.data||[]).map((profile)=>[profile.id,profile.display_name]));
   renderProducts();
 }
 async function loadTaxonomy() {
@@ -87,19 +117,29 @@ function statusBadge(status) {
 }
 
 function renderProducts() {
-  const filter=($("productFilter").value||"").trim().toLowerCase();
-  const categories=new Map(state.categories.map((c)=>[c.id,c.name]));
-  const types=new Map(state.types.map((t)=>[t.id,t.name]));
-  const items=state.products.filter((p)=>(p.title+" "+p.slug).toLowerCase().includes(filter));
-  $("productRows").innerHTML=items.length?items.map((p)=>
-    '<tr><td><strong>'+esc(p.title)+'</strong><small>'+esc(types.get(p.product_type_id)||"Jenis tidak diketahui")+' · '+esc(p.slug)+'</small></td>'+
+  const query = normalizeSearch($("productFilter").value || "");
+  const statusFilter = $("productStatusFilter").value || "all";
+  const categories = new Map(state.categories.map((c) => [c.id,c.name]));
+  const types = new Map(state.types.map((t) => [t.id,t.name]));
+  const tokens = query.split(/\s+/).filter(Boolean);
+  const items = state.products.filter((p) => {
+    const haystack = normalizeSearch([
+      p.title,p.slug,p.description,categories.get(p.category_id),
+      types.get(p.product_type_id),state.productSellers.get(p.seller_id),p.status,p.price
+    ].join(" "));
+    return tokens.every((term) => haystack.includes(term)) &&
+      (statusFilter === "all" || p.status === statusFilter);
+  });
+  $("productResultCount").textContent = items.length + " dari " + state.products.length + " produk";
+  $("productRows").innerHTML = items.length ? items.map((p) =>
+    '<tr><td><strong>'+esc(p.title)+'</strong><small>'+esc(types.get(p.product_type_id)||"Jenis tidak diketahui")+' · '+esc(p.slug)+' · Kreator: '+esc(state.productSellers.get(p.seller_id)||"—")+'</small></td>'+
     '<td>'+esc(categories.get(p.category_id)||"—")+'</td><td>'+money(p.price,p.currency)+'</td><td>'+statusBadge(p.status)+'</td>'+
     '<td><button data-edit-product="'+p.id+'">Edit</button>'+
     (p.status==="published"?'<button data-product-status="'+p.id+'" data-next-status="archived">Arsipkan</button>':
     p.status==="archived"?'<button data-product-status="'+p.id+'" data-next-status="draft">Pulihkan</button>':
     '<button data-product-status="'+p.id+'" data-next-status="published">Terbitkan</button>')+
     '</td></tr>'
-  ).join(""):'<tr><td colspan="5">Belum ada produk. Tambahkan produk pertama untuk mulai membangun katalog.</td></tr>';
+  ).join("") : '<tr><td colspan="5">'+(state.products.length ? "Tidak ada produk yang cocok dengan pencarian ini." : "Belum ada produk. Tambahkan produk pertama untuk mulai membangun katalog.")+'</td></tr>';
 }
 
 function renderTaxonomy() {
@@ -109,17 +149,26 @@ function renderTaxonomy() {
   $("mappingType").innerHTML=activeTypes.map((t)=>'<option value="'+t.id+'">'+esc(t.name)+'</option>').join("");
   $("mappingCategory").innerHTML=activeCats.map((c)=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join("");
   updateProductCategories();
+
+  const categoryQuery=normalizeSearch($("categoryFilter").value||"");
+  const typeQuery=normalizeSearch($("typeFilter").value||"");
+  const mappingQuery=normalizeSearch($("mappingFilter").value||"");
+  const visibleCategories=state.categories.filter((c)=>normalizeSearch([c.name,c.slug,c.description,c.is_active?"aktif":"nonaktif"].join(" ")).includes(categoryQuery));
+  const visibleTypes=state.types.filter((t)=>normalizeSearch([t.name,t.slug,t.description,t.is_active?"aktif":"nonaktif"].join(" ")).includes(typeQuery));
   const typeNames=new Map(state.types.map((t)=>[t.id,t.name]));
   const catNames=new Map(state.categories.map((c)=>[c.id,c.name]));
-  $("categoryRows").innerHTML=state.categories.map((c)=>
+
+  $("categoryRows").innerHTML=visibleCategories.map((c)=>
     '<tr><td><strong>'+esc(c.name)+'</strong><small>'+esc(c.description)+'</small></td><td>'+esc(c.slug)+'</td><td>'+statusBadge(c.is_active?"active":"inactive")+'</td><td><button data-category-toggle="'+c.id+'" data-active="'+c.is_active+'">'+(c.is_active?"Nonaktifkan":"Aktifkan")+'</button></td></tr>'
-  ).join("")||'<tr><td colspan="4">Belum ada kategori.</td></tr>';
-  $("typeRows").innerHTML=state.types.map((t)=>
+  ).join("")||'<tr><td colspan="4">'+(state.categories.length?"Kategori tidak ditemukan.":"Belum ada kategori.")+'</td></tr>';
+  $("typeRows").innerHTML=visibleTypes.map((t)=>
     '<tr><td><strong>'+esc(t.name)+'</strong><small>'+esc(t.description)+'</small></td><td>'+esc(t.slug)+'</td><td>'+statusBadge(t.is_active?"active":"inactive")+'</td><td><button data-type-toggle="'+t.id+'" data-active="'+t.is_active+'">'+(t.is_active?"Nonaktifkan":"Aktifkan")+'</button></td></tr>'
-  ).join("")||'<tr><td colspan="4">Belum ada jenis produk.</td></tr>';
-  $("mappingRows").innerHTML=state.mappings.map((m)=>
+  ).join("")||'<tr><td colspan="4">'+(state.types.length?"Jenis produk tidak ditemukan.":"Belum ada jenis produk.")+'</td></tr>';
+  const visibleMappings=state.mappings.filter((m)=>normalizeSearch([typeNames.get(m.product_type_id),catNames.get(m.category_id)].join(" ")).includes(mappingQuery));
+  $("mappingRows").innerHTML=visibleMappings.map((m)=>
     '<tr><td>'+esc(typeNames.get(m.product_type_id)||"—")+'</td><td>'+esc(catNames.get(m.category_id)||"—")+'</td><td><button data-remove-mapping="'+m.product_type_id+'" data-category-id="'+m.category_id+'">Hapus hubungan</button></td></tr>'
-  ).join("")||'<tr><td colspan="3">Belum ada pemetaan.</td></tr>';
+  ).join("")||'<tr><td colspan="3">'+(state.mappings.length?"Pemetaan tidak ditemukan.":"Belum ada pemetaan.")+'</td></tr>';
+  renderProducts();
 }
 
 function updateProductCategories() {
@@ -232,6 +281,12 @@ $("productForm").addEventListener("submit",async(event)=>{
 $("productTitle").addEventListener("input",()=>{if(!$("productId").value||!$("productSlug").dataset.edited)$("productSlug").value=slugify($("productTitle").value);});
 $("productSlug").addEventListener("input",()=>{$("productSlug").dataset.edited="true";});
 $("productFilter").addEventListener("input",renderProducts);
+$("productStatusFilter").addEventListener("change",renderProducts);
+$("categoryFilter").addEventListener("input",renderTaxonomy);
+$("typeFilter").addEventListener("input",renderTaxonomy);
+$("mappingFilter").addEventListener("input",renderTaxonomy);
+$("reviewFilter").addEventListener("input",renderReviewRows);
+$("userFilter").addEventListener("input",renderUsers);
 $("productRows").addEventListener("click",async(event)=>{
   const edit=event.target.closest("[data-edit-product]");
   const status=event.target.closest("[data-product-status]");
@@ -294,6 +349,20 @@ $("mappingRows").addEventListener("click",async(event)=>{
   await loadTaxonomy();notify("Pemetaan dihapus.");
 });
 
+function renderReviewRows() {
+  const query=normalizeSearch($("reviewFilter").value||"");
+  const items=state.revisions.filter((r)=>normalizeSearch([
+    state.reviewProducts.get(r.product_id),state.reviewSellers.get(r.seller_id),
+    r.proposed_title,r.proposed_slug,r.proposed_description,r.seller_note
+  ].join(" ")).includes(query));
+  $("reviewRows").innerHTML=items.length?items.map((r)=>
+    '<tr><td><strong>'+esc(state.reviewProducts.get(r.product_id)||"Produk")+'</strong><small>Usulan: '+esc(r.proposed_title)+' · '+esc(r.proposed_slug)+'</small></td>'+
+    '<td>'+esc(state.reviewSellers.get(r.seller_id)||"Kreator")+'</td><td>'+money(r.proposed_price,r.proposed_currency)+'</td>'+
+    '<td><input class="admin-review-note" data-review-note="'+r.id+'" maxlength="2000" placeholder="Catatan, wajib jika ditolak"></td>'+
+    '<td><button data-review="'+r.id+'" data-decision="approved">Setujui</button><button data-review="'+r.id+'" data-decision="rejected">Tolak</button></td></tr>'
+  ).join(""):'<tr><td colspan="5">'+(state.revisions.length?"Tidak ada revisi yang cocok.":"Tidak ada revisi yang menunggu persetujuan.")+'</td></tr>';
+}
+
 async function loadReviews(){
   $("reviewRows").innerHTML='<tr><td colspan="5">Memuat antrean...</td></tr>';
   const {data,error}=await supabase.from("product_revisions").select("id,product_id,seller_id,proposed_title,proposed_slug,proposed_description,proposed_price,proposed_currency,seller_note,status,created_at").eq("status","pending_review").order("created_at",{ascending:true});
@@ -305,15 +374,11 @@ async function loadReviews(){
     productIds.length?supabase.from("products").select("id,title").in("id",productIds):Promise.resolve({data:[]}),
     sellerIds.length?supabase.from("profiles").select("id,display_name").in("id",sellerIds):Promise.resolve({data:[]}),
   ]);
-  const pmap=new Map((products.data||[]).map((p)=>[p.id,p.title]));
-  const smap=new Map((profiles.data||[]).map((p)=>[p.id,p.display_name]));
-  $("reviewRows").innerHTML=state.revisions.length?state.revisions.map((r)=>
-    '<tr><td><strong>'+esc(pmap.get(r.product_id)||"Produk")+'</strong><small>Usulan: '+esc(r.proposed_title)+' · '+esc(r.proposed_slug)+'</small></td>'+
-    '<td>'+esc(smap.get(r.seller_id)||"Kreator")+'</td><td>'+money(r.proposed_price,r.proposed_currency)+'</td>'+
-    '<td><input class="admin-review-note" data-review-note="'+r.id+'" maxlength="2000" placeholder="Catatan, wajib jika ditolak"></td>'+
-    '<td><button data-review="'+r.id+'" data-decision="approved">Setujui</button><button data-review="'+r.id+'" data-decision="rejected">Tolak</button></td></tr>'
-  ).join(""):'<tr><td colspan="5">Tidak ada revisi yang menunggu persetujuan.</td></tr>';
+  state.reviewProducts=new Map((products.data||[]).map((p)=>[p.id,p.title]));
+  state.reviewSellers=new Map((profiles.data||[]).map((p)=>[p.id,p.display_name]));
+  renderReviewRows();
 }
+
 $("reviewRows").addEventListener("click",async(event)=>{
   const button=event.target.closest("[data-review]");
   if(!button)return;
@@ -327,12 +392,10 @@ $("reviewRows").addEventListener("click",async(event)=>{
 });
 $("refreshReviews").addEventListener("click",loadReviews);
 
-async function loadUsers(){
-  $("userRows").innerHTML='<tr><td colspan="5">Memuat akun pengguna...</td></tr>';
-  const {data,error}=await supabase.functions.invoke("gicomm-admin",{body:{action:"list_users"}});
-  if(error){$("userRows").innerHTML='<tr><td colspan="5">Layanan manajemen pengguna belum tersedia. Pastikan Edge Function gicomm-admin sudah dideploy.</td></tr>';notify(error.message);return;}
-  state.users=data?.users||[];
-  $("userRows").innerHTML=state.users.map((user)=>{
+function renderUsers() {
+  const query=normalizeSearch($("userFilter").value||"");
+  const items=state.users.filter((user)=>normalizeSearch([user.email,user.id,user.role,user.last_sign_in_at].join(" ")).includes(query));
+  $("userRows").innerHTML=items.map((user)=>{
     const role=user.role==="admin"?"admin":"member";
     const created=user.created_at?new Date(user.created_at).toLocaleDateString("id-ID"):"—";
     const last=user.last_sign_in_at?new Date(user.last_sign_in_at).toLocaleString("id-ID"):"Belum pernah";
@@ -342,8 +405,16 @@ async function loadUsers(){
         ? '<select data-user-role="'+user.id+'"><option value="admin" disabled selected>Admin utama / legacy</option><option value="member">Turunkan ke Member</option></select><button data-save-role="'+user.id+'">Turunkan role</button>'
         : '<small>Role Member standar · tidak dapat dipromosikan menjadi Admin</small>';
     return '<tr><td><strong>'+esc(user.email||"Tanpa email")+'</strong><small>'+esc(user.id)+'</small></td><td>'+created+'</td><td>'+last+'</td><td>'+statusBadge(role)+'</td><td>'+roleAction+'</td></tr>';
-  }).join("")||'<tr><td colspan="5">Belum ada akun.</td></tr>';
+  }).join("")||'<tr><td colspan="5">'+(state.users.length?"Pengguna tidak ditemukan.":"Belum ada akun.")+'</td></tr>';
 }
+async function loadUsers(){
+  $("userRows").innerHTML='<tr><td colspan="5">Memuat akun pengguna...</td></tr>';
+  const {data,error}=await supabase.functions.invoke("gicomm-admin",{body:{action:"list_users"}});
+  if(error){$("userRows").innerHTML='<tr><td colspan="5">Layanan manajemen pengguna belum tersedia. Pastikan Edge Function gicomm-admin sudah dideploy.</td></tr>';notify(error.message);return;}
+  state.users=data?.users||[];
+  renderUsers();
+}
+
 $("refreshUsers").addEventListener("click",loadUsers);
 $("userRows").addEventListener("click",async(event)=>{
   const button=event.target.closest("[data-save-role]");

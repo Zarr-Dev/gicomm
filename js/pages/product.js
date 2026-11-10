@@ -29,6 +29,7 @@ async function loadIdentity() {
   $("productSignIn").hidden = true;
   $("productAccount").hidden = false;
   $("productAccount").textContent = user.user_metadata?.display_name || user.email?.split("@")[0] || "Akun";
+  if (user.app_metadata?.role === "admin") $("productAdmin").hidden = false;
 }
 
 async function loadProduct() {
@@ -108,6 +109,13 @@ async function toggleSaved() {
   updateSaveButton();
 }
 
+$("productSearchForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const query = $("productSearchInput").value.trim();
+  const target = new URL("index.html", window.location.href);
+  if (query) target.searchParams.set("q", query);
+  window.location.assign(target.pathname + target.search + "#catalog");
+});
 $("saveProduct").addEventListener("click", toggleSaved);
 document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
   button.addEventListener("click", () => {

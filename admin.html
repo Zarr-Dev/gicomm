@@ -18,7 +18,9 @@
   </header>
   <div class="admin-layout">
     <aside class="admin-sidebar">
-      <div class="admin-side-label">WORKSPACE</div>
+      <div class="admin-side-label">RUANG KERJA</div>
+      <label class="admin-nav-search" for="adminNavSearch"><span aria-hidden="true">⌕</span><input id="adminNavSearch" type="search" placeholder="Cari menu admin..." autocomplete="off"></label>
+      <p class="admin-nav-empty" id="adminNavEmpty" hidden>Menu tidak ditemukan.</p>
       <button class="admin-nav-item active" data-panel="overview"><span>◫</span> Ringkasan</button>
       <button class="admin-nav-item" data-panel="products"><span>▦</span> Produk</button>
       <button class="admin-nav-item" data-panel="categories"><span>◇</span> Kategori</button>
@@ -63,29 +65,29 @@
           </div>
           <div class="admin-form-actions"><button class="admin-primary" type="submit" id="saveProduct">Simpan produk</button><span id="productFormHint">Produk akan disimpan ke database Gicomm.</span></div>
         </form>
-        <div class="admin-card"><div class="admin-table-heading"><h2>Daftar produk</h2><input id="productFilter" type="search" placeholder="Cari produk..."></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Produk</th><th>Kategori</th><th>Harga</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="productRows"><tr><td colspan="5">Memuat produk...</td></tr></tbody></table></div></div>
+        <div class="admin-card"><div class="admin-table-heading"><div><h2>Daftar produk</h2><small id="productResultCount" class="admin-filter-caption">Semua status produk</small></div><div class="admin-filter-controls"><input id="productFilter" type="search" placeholder="Cari nama, kreator, kategori..." aria-label="Cari produk"><select id="productStatusFilter" aria-label="Filter status produk"><option value="all">Semua status</option><option value="draft">Draft</option><option value="pending_review">Menunggu review</option><option value="published">Terbit</option><option value="archived">Arsip</option></select></div></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Produk</th><th>Kategori</th><th>Harga</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="productRows"><tr><td colspan="5">Memuat produk...</td></tr></tbody></table></div></div>
       </section>
 
       <section class="admin-panel" id="panel-categories">
         <div class="admin-section-toolbar"><div><h2>Kategori</h2><p>Atur kategori yang tampil pada marketplace.</p></div></div>
         <form id="categoryForm" class="admin-card admin-inline-form"><label>Nama kategori<input id="categoryName" required minlength="2" maxlength="80" placeholder="Nama kategori"></label><label>Deskripsi<input id="categoryDescription" maxlength="300" placeholder="Deskripsi singkat"></label><button class="admin-primary" type="submit">Tambah kategori</button></form>
-        <div class="admin-card"><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Nama</th><th>Slug</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="categoryRows"></tbody></table></div></div>
+        <div class="admin-card"><div class="admin-table-heading"><h2>Daftar kategori</h2><input id="categoryFilter" type="search" placeholder="Cari kategori..." aria-label="Cari kategori"></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Nama</th><th>Slug</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="categoryRows"></tbody></table></div></div>
       </section>
 
       <section class="admin-panel" id="panel-types">
         <div class="admin-section-toolbar"><div><h2>Jenis produk</h2><p>Kelola format utama produk digital dan hubungannya dengan kategori.</p></div></div>
         <form id="typeForm" class="admin-card admin-inline-form"><label>Nama jenis<input id="typeName" required minlength="2" maxlength="80" placeholder="Contoh: Template"></label><label>Deskripsi<input id="typeDescription" maxlength="300" placeholder="Deskripsi singkat"></label><button class="admin-primary" type="submit">Tambah jenis</button></form>
-        <div class="admin-card"><div class="admin-card-heading"><div><span class="market-kicker">TAXONOMY</span><h2>Pemetaan jenis ↔ kategori</h2></div></div><form id="mappingForm" class="admin-inline-form"><label>Jenis produk<select id="mappingType"></select></label><label>Kategori<select id="mappingCategory"></select></label><button class="admin-primary" type="submit">Hubungkan</button></form><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Jenis</th><th>Kategori</th><th>Aksi</th></tr></thead><tbody id="mappingRows"></tbody></table></div></div>
-        <div class="admin-card"><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Jenis produk</th><th>Slug</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="typeRows"></tbody></table></div></div>
+        <div class="admin-card"><div class="admin-table-heading"><h2>Pemetaan jenis ↔ kategori</h2><input id="mappingFilter" type="search" placeholder="Cari pemetaan..." aria-label="Cari pemetaan"></div><form id="mappingForm" class="admin-inline-form"><label>Jenis produk<select id="mappingType"></select></label><label>Kategori<select id="mappingCategory"></select></label><button class="admin-primary" type="submit">Hubungkan</button></form><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Jenis</th><th>Kategori</th><th>Aksi</th></tr></thead><tbody id="mappingRows"></tbody></table></div></div>
+        <div class="admin-card"><div class="admin-table-heading"><h2>Daftar jenis produk</h2><input id="typeFilter" type="search" placeholder="Cari jenis produk..." aria-label="Cari jenis produk"></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Jenis produk</th><th>Slug</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="typeRows"></tbody></table></div></div>
       </section>
 
       <section class="admin-panel" id="panel-reviews">
-        <div class="admin-section-toolbar"><div><h2>Moderasi revisi</h2><p>Periksa usulan perubahan produk dari kreator.</p></div><button class="admin-secondary" id="refreshReviews">Muat ulang</button></div>
+        <div class="admin-section-toolbar"><div><h2>Moderasi revisi</h2><p>Periksa usulan perubahan produk dari kreator.</p></div><div class="admin-filter-controls"><input id="reviewFilter" type="search" placeholder="Cari produk atau kreator..." aria-label="Cari antrean moderasi"><button class="admin-secondary" id="refreshReviews">Muat ulang</button></div></div>
         <div class="admin-card"><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Produk / Usulan</th><th>Kreator</th><th>Perubahan</th><th>Catatan review</th><th>Keputusan</th></tr></thead><tbody id="reviewRows"></tbody></table></div></div>
       </section>
 
       <section class="admin-panel" id="panel-users">
-        <div class="admin-section-toolbar"><div><h2>Pengguna & Admin</h2><p>Atur akses Admin berdasarkan role tepercaya di Supabase Auth.</p></div><button class="admin-secondary" id="refreshUsers">Muat ulang</button></div>
+        <div class="admin-section-toolbar"><div><h2>Pengguna & Admin</h2><p>Atur akses Admin berdasarkan role tepercaya di Supabase Auth.</p></div><div class="admin-filter-controls"><input id="userFilter" type="search" placeholder="Cari email atau ID pengguna..." aria-label="Cari pengguna"><button class="admin-secondary" id="refreshUsers">Muat ulang</button></div></div>
         <div class="admin-security-note"><strong>Kontrol keamanan:</strong> perubahan role hanya dilakukan melalui Edge Function server-side. Role tidak dapat diubah dari form profil atau user_metadata.</div>
         <div class="admin-card"><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Akun</th><th>Terdaftar</th><th>Login terakhir</th><th>Role</th><th>Aksi</th></tr></thead><tbody id="userRows"><tr><td colspan="5">Memuat pengguna...</td></tr></tbody></table></div></div>
       </section>
